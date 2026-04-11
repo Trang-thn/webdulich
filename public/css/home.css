@@ -1,0 +1,339 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+    padding: 10px;
+
+}
+
+.top {
+    background: #111;
+    height: 50px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+   padding: 0 30px;
+}
+
+.menu { 
+    background-color: rgb(233, 237, 238);
+    overflow: hidden;
+    margin: auto;
+    padding: 0 15px; 
+}
+
+
+.admin {
+    float: right;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    gap: 8px;
+}
+
+.admin i {
+    color: black;
+    font-size: 30px;
+}
+
+.admin a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.admin a:hover {
+    color: #3A6ACA;
+}
+
+.logo {
+    text-align: center;
+    background: white;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.logo h1 {
+    color: #3A6ACA;
+    letter-spacing: 2px;
+}
+
+#divLeft,
+#divRight {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+#divLeft {
+    width: 70%;
+    float: left;
+}
+
+#divRight {
+    width: 30%;
+    float: left;
+    justify-content: flex-end;
+}
+
+#divLeft ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+#divLeft ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+#divLeft ul li a:hover {
+    background-color: #3A6ACA;
+    color: white;
+}
+
+#txtSearch {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px 0 0 6px;
+    outline: none;
+}
+
+#btnsearch {
+    background-color: #3A6ACA;
+    border: none;
+    padding: 8px 14px;
+    color: white;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+}
+
+#btnsearch:hover {
+    background-color: #2a4f8a;
+}
+
+.banner img {
+    width: 100%;
+    max-height: 700px;
+    object-fit: cover;
+    border-radius: 0 0 10px 10px;
+}
+
+.product {
+    padding: 60px 0;
+}
+
+
+.tour-card {
+    flex: 0 0 calc(25% - 20px);
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    padding: 15px; 
+}
+
+
+.tour-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tour-grid {
+  display: flex;
+  flex-wrap: wrap;       
+  gap: 20px;             
+  justify-content: flex-start; 
+}
+
+.tour-card {
+  flex: 0 0 calc(25% - 20px);
+  background: #dee5e4;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.tour-card img {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+
+.footer-info {
+    background:rgb(54, 51, 51);
+    padding: 40px 0;
+    border-top: 1px solid #ddd;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.info {
+    width: 250px;
+}
+
+.info h3 {
+    margin-bottom: 15px;
+    color: #3A6ACA;
+}
+
+.info p {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color:white;
+}
+.btn{
+    text-decoration: none;
+    background-color: rgb(204, 183, 81);
+    color:white;
+    border-radius: 5px;
+    padding: 4px 8px;
+}
+.btn-book{
+    background-color: rgb(116, 204, 81);
+
+}
+
+@media (max-width: 992px) {
+    .tour-card {
+        width: 48%;
+    }
+}
+
+@media (max-width: 576px) {
+
+    #divLeft,
+    #divRight {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tour-card {
+        width: 100%;
+    }
+
+    .info-row {
+        gap: 20px;
+    }
+}
+/* trang */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    z-index: 1000;
+}
+
+.dropdown-menu a {
+    color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+/* binh luan */
+.tour-comments {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tour-comments h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #0077cc;
+  font-weight: bold;
+}
+
+.tour-comments label {
+  display: block;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #444;
+}
+
+.tour-comments textarea,
+.tour-comments select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.tour-comments textarea:focus,
+.tour-comments select:focus {
+  border-color: #0077cc;
+  outline: none;
+}
+
+.tour-comments textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.tour-comments button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tour-comments button:hover {
+  background-color: #005fa3;
+}

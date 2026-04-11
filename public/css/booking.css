@@ -1,0 +1,93 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.background-slideshow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1s ease-in-out;
+}
+
+.luxury-booking {
+  max-width: 520px;
+  margin: 60px auto;
+  padding: 35px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.luxury-booking h2 {
+  text-align: center;
+  letter-spacing: 2px;
+  color: #111;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #bfa25a;
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+.luxury-group {
+  margin-bottom: 22px;
+}
+
+.luxury-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.luxury-group input,
+.luxury-group select,
+.luxury-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  background: #fafafa;
+  transition: 0.3s;
+}
+
+.luxury-group input:focus,
+.luxury-group select:focus,
+.luxury-group textarea:focus {
+  border-color: #bfa25a;
+  box-shadow: 0 0 8px rgba(191, 162, 90, 0.4);
+  outline: none;
+  background: #fff;
+}
+
+.luxury-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #bfa25a, #8e6f3e);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.luxury-btn:hover {
+  background: linear-gradient(135deg, #d4b76a, #a07c43);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}

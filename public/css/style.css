@@ -1,0 +1,276 @@
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    padding: 20px;
+}
+
+.title {
+    color: #761d1d;
+    margin-bottom: 20px;
+}
+
+.tour-card {
+    display: flex;
+    background: #fff;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.tour-card:hover {
+    transform: scale(1.02);
+}
+
+.tour-card img {
+    width: 280px;
+    object-fit: cover;
+}
+
+.tour-info {
+    padding: 15px;
+    flex: 1;
+}
+
+.price {
+    color: rgb(37, 39, 151);
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.btn {
+    align-self: center;
+    margin-right: 20px;
+    background: #5bade3 !important;
+    color:white !important;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.btn-book{
+    background: #2ecc71 !important;
+}
+
+.detail {
+    display: flex;
+    background: #a0bbf2;
+    padding: 20px;
+    border-radius: 10px;
+}
+/* Grid 2 cột cho danh sách tour */
+.tour-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+.tour-card {
+    background: #dee5e4;
+    width: auto !important;
+}
+.detail-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.detail-img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.price-detail {
+    color: red;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.content-tour {
+    line-height: 1.7;
+    margin-top: 10px;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-top: 20px;
+    background: #3498db;
+}
+.detail-wrapper {
+    max-width: 1200px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: 70% 30%;
+    gap: 25px;
+}
+
+.tour-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.tour-meta p {
+    margin: 6px 0;
+    color: #333;
+}
+
+/* Gallery */
+.tour-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.tour-gallery img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* Content */
+.tour-content {
+    line-height: 1.7;
+}
+
+/* RIGHT */
+.detail-right {
+    position: sticky;
+    top: 20px;
+}
+
+.box {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.box h3 {
+    margin-bottom: 10px;
+    color: #1e6f43;
+}
+
+.box ul {
+    padding-left: 18px;
+}
+
+.price-big {
+    font-size: 22px;
+    color: red;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.btn-book {
+    display: block;
+    background: #2ecc71;
+    color: #fff;
+    text-align: center;
+    padding: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.tour-section {
+    margin-top: 30px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.tour-section h2 {
+    margin-bottom: 15px;
+    color: #1e6f43;
+}
+
+.schedule-item {
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 3px solid #2ecc71;
+}
+
+.schedule-item h4 {
+    margin-bottom: 6px;
+}
+
+.policy-list {
+    padding-left: 18px;
+}
+
+.policy-list li {
+    margin-bottom: 8px;
+}
+.btn-back {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+    background: #6c757d;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-back:hover {
+    background: #495057;
+}
+/* ADMIN*/ 
+.admin-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.admin-title {
+    color: #0d47a1;
+    margin-bottom: 20px;
+}
+
+.admin-btn {
+    background: #0d47a1;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.admin-btn:hover {
+    background: #08306b;
+}
+
+.admin-btn.danger {
+    background: #c62828;
+}
+
+.admin-btn.danger:hover {
+    background: #8e0000;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #e3f2fd;
+    color: #0d47a1;
+}
+

@@ -1,0 +1,65 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.booking-success {
+    max-width: 520px;
+    margin: 60px auto;
+    padding: 35px;
+    background: rgba(255, 255, 255, 0.9);
+    
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.luxury-alert {
+    background: linear-gradient(135deg, #fdfcf8, #f7f3e9);
+    border-left: 7px solid #bfa25a;
+    border-radius: 15px;
+    padding: 30px;
+    color: #333;
+}
+
+.luxury-alert h4 {
+    margin-bottom: 15px;
+}
+
+.booking-actions {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.booking-actions .btn {
+    padding: 12px 26px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.luxury-btn-warning {
+    background: linear-gradient(135deg, #f0ad4e, #d39e00) !important;
+    color: #fff !important;
+}
+
+.luxury-btn-danger {
+    background: linear-gradient(135deg, #dc3545, #a71d2a)!important;
+    color: #fff!important;
+}
+
+.luxury-btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057)!important;
+    color: #fff!important;
+}
+
+.booking-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
