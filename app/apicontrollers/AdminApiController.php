@@ -4,7 +4,7 @@ require_once __DIR__ . "/../models/Gallery.php";
 require_once __DIR__ . "/../models/Admin.php";
 require_once __DIR__ . "/../models/User.php";
 
-class AdminController
+class AdminApiController
 {
     private $adminModel;
     private $userModel;
@@ -15,11 +15,7 @@ class AdminController
         $this->userModel = new User();
     }
 
-    public function loginForm()
-    {
-        include __DIR__ . "/../views/user/login.php";
-    }
-
+    // ✅ API đăng nhập
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,34 +24,35 @@ class AdminController
 
             $admin = $this->adminModel->getByUsername($username);
             if ($admin && $admin['PassAdmin'] === $password) {
-                $_SESSION['admin'] = $admin;
-                $viewFile = __DIR__ . "/../views/admin/home.php";
-                include __DIR__ . "/../views/admin/dashboard.php";
-                exit();
+                echo json_encode([
+                    'status' => 'success',
+                    'role' => 'admin',
+                    'data' => $admin
+                ], JSON_UNESCAPED_UNICODE);
+                return;
             }
 
             $user = $this->userModel->getByUsername($username);
             if ($user && password_verify($password, $user['PassWord'])) {
-                $_SESSION['user'] = $user;
-                $tours = Tour::getLimit(8); 
-                include __DIR__ . "/../views/home/home.php";
-                exit();
+                echo json_encode([
+                    'status' => 'success',
+                    'role' => 'user',
+                    'data' => $user
+                ], JSON_UNESCAPED_UNICODE);
+                return;
             }
 
-
-            $error = "Sai tài khoản hoặc mật khẩu";
-            include __DIR__ . "/../views/user/login.php";
+            echo json_encode(['status' => 'error', 'message' => 'Sai tài khoản hoặc mật khẩu'], JSON_UNESCAPED_UNICODE);
         }
     }
 
-
+    // ✅ API đăng ký
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
             $confirm  = $_POST['confirm_password'] ?? '';
-
             $hoten   = $_POST['hoten'] ?? '';
             $email   = $_POST['email'] ?? '';
             $diachi  = $_POST['diachi'] ?? '';
@@ -63,17 +60,14 @@ class AdminController
             $sodt    = $_POST['sodt'] ?? '';
 
             if ($this->userModel->existsUsername($username)) {
-                $error = "Tên đăng nhập đã tồn tại!";
-                include __DIR__ . "/../views/user/register.php"; 
+                echo json_encode(['status' => 'error', 'message' => 'Tên đăng nhập đã tồn tại!'], JSON_UNESCAPED_UNICODE);
                 return;
             }
 
             if ($password !== $confirm) {
-                $error = "Mật khẩu nhập lại không khớp";
-                include __DIR__ . "/../views/user/register.php";
+                echo json_encode(['status' => 'error', 'message' => 'Mật khẩu nhập lại không khớp'], JSON_UNESCAPED_UNICODE);
                 return;
             }
-
 
             $this->userModel->register([
                 'username' => $username,
@@ -85,31 +79,13 @@ class AdminController
                 'sodt'     => $sodt
             ]);
 
-            $_SESSION['message'] = "Đăng ký thành công, vui lòng đăng nhập!";
-            header("Location: /webdulich/user/login");
-            exit();
-        } else {
-            include __DIR__ . "/../views/user/register.php";
+            echo json_encode(['status' => 'success', 'message' => 'Đăng ký thành công!'], JSON_UNESCAPED_UNICODE);
         }
     }
 
-
-    public function logout()
-    {
-        unset($_SESSION['admin']);
-        unset($_SESSION['user']);
-        session_destroy();
-        header("Location: /webdulich");
-        exit();
-    }
-
+    // ✅ API thống kê dashboard
     public function dashboard()
     {
-        if (!isset($_SESSION['admin'])) {
-            header("Location: /webdulich/admin/login");
-            exit();
-        }
-
         $stats = [
             'tour'    => $this->adminModel->countTable('TOUR'),
             'user'    => $this->adminModel->countTable('THANHVIEN'),
@@ -117,29 +93,19 @@ class AdminController
             'comment' => $this->adminModel->countTable('COMMENT')
         ];
 
-        $viewFile = __DIR__ . "/../views/admin/home.php";
-        include __DIR__ . "/../views/admin/dashboard.php";
+        echo json_encode(['status' => 'success', 'data' => $stats], JSON_UNESCAPED_UNICODE);
     }
 
-
+    // ✅ API thông tin người dùng
     public function profile()
     {
-        if (isset($_SESSION['user'])) {
-            $user = $this->userModel->getById($_SESSION['user']['MaTVien']);
-            include "app/views/user/profile.php";
+        $userId = $_GET['id'] ?? null;
+        if ($userId) {
+            $user = $this->userModel->getById($userId);
+            echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
         } else {
-            header("Location: /webdulich/admin/login");
-            exit();
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
         }
     }
 
-    public function home() {
-    $viewFile = __DIR__ . '/../views/admin/home.php';
-    include __DIR__ . "/../views/admin/dashboard.php";
-}
-
-    public function admin()
-    {
-        include __DIR__ . "/../views/admin/dashboard.php";
-    }
 }

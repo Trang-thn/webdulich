@@ -72,28 +72,29 @@
       <h2 class="title">🌏 Tour nổi bật</h2>
    <?php endif; ?>
    <div class="tour-grid">
-      <?php while ($tour = $tours->fetch_assoc()): ?>
-         <?php
-         $images = explode(",", $tour['AnhTour']);
-         $firstImage = trim($images[0]);
-         ?>
-         <div class="tour-card">
-            <img src="/webdulich/public/images/images/<?= $firstImage ?>" alt="<?= $tour['TenTour'] ?>">
-            <div class="tour-info">
-               <h3><?= htmlspecialchars($tour['TenTour']) ?></h3>
-               <p>📍 <?= htmlspecialchars($tour['DiemKhoiHanh']) ?></p>
-               <p>⏰ <?= htmlspecialchars($tour['TGTour']) ?></p>
-               <p>🛫
-                  <?= !empty($tour['NgayKhoiHanh'])
-                     ? date('d/m/Y', strtotime($tour['NgayKhoiHanh']))
-                     : 'Chưa có ngày khởi hành' ?>
-               </p>
-               <div class="price"><?= number_format($tour['GiaTour']) ?>đ</div>
-            </div>
-            <a class="btn" href="/webdulich/detail?id=<?= $tour['MaTour'] ?>">Chi tiết</a>
-            <a class="btn btn-book" href="/webdulich/booking/form?tour_id=<?= $tour['MaTour'] ?>">Đặt tour</a>
-         </div>
-      <?php endwhile; ?>
+      <?php foreach ($tours as $tour): ?>
+   <?php
+   $images = explode(",", $tour['AnhTour']);
+   $firstImage = trim($images[0]);
+   ?>
+   <div class="tour-card">
+      <img src="/webdulich/public/images/images/<?= $firstImage ?>" alt="<?= $tour['TenTour'] ?>">
+      <div class="tour-info">
+         <h3><?= htmlspecialchars($tour['TenTour']) ?></h3>
+         <p>📍 <?= htmlspecialchars($tour['DiemKhoiHanh']) ?></p>
+         <p>⏰ <?= htmlspecialchars($tour['TGTour']) ?></p>
+         <p>🛫
+            <?= !empty($tour['NgayKhoiHanh'])
+               ? date('d/m/Y', strtotime($tour['NgayKhoiHanh']))
+               : 'Chưa có ngày khởi hành' ?>
+         </p>
+         <div class="price"><?= number_format($tour['GiaTour']) ?>đ</div>
+      </div>
+      <a class="btn" href="/webdulich/detail?id=<?= $tour['MaTour'] ?>">Chi tiết</a>
+      <a class="btn btn-book" href="/webdulich/booking/form?tour_id=<?= $tour['MaTour'] ?>">Đặt tour</a>
+   </div>
+<?php endforeach; ?>
+
    </div>
 
 

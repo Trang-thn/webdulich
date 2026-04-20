@@ -4,31 +4,40 @@ require_once __DIR__ . "/../../config/database.php";
 
 class Tour
 {
-    public static function getAll()
-    {
+    public static function getAll() {
         $conn = Database::getConnection();
-        $sql = "SELECT * FROM tour ORDER BY NgayThem DESC";
-        return $conn->query($sql);
+        $sql = "SELECT * FROM tour";
+        $result = $conn->query($sql);
+
+        $tours = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $tours[] = $row;
+            }
+        }
+        return $tours; // ✅ Trả về mảng thay vì mysqli_result
     }
+
 
     public static function getById($id)
-    {
-        $conn = Database::getConnection();
+{
+    $conn = Database::getConnection();
+    $stmt = $conn->prepare("SELECT * FROM tour WHERE MaTour = ? LIMIT 1");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc(); // ✅ trả về mảng
+}
 
-        $id = intval($id);
-
-        $sql = "SELECT * FROM TOUR WHERE MaTour = $id";
-        return $conn->query($sql);
-    }
     public static function getOtherTours($id)
     {
 
         $conn = Database::getConnection();
         $id = (int)$id;
 
-        $sql = "SELECT * FROM TOUR 
-                WHERE MaTour != $id 
-                ORDER BY RAND() 
+        $sql = "SELECT * FROM TOUR
+                WHERE MaTour != $id
+                ORDER BY RAND()
                 LIMIT 6";
 
         return $conn->query($sql);
@@ -64,14 +73,21 @@ class Tour
     return $result ? $result->fetch_assoc() : null;
 }
 //linh
-    public static function getLimit($limit = 8) {
-        $db = Database::getConnection();
-        $sql = "SELECT * FROM TOUR ORDER BY MaTour ASC LIMIT ?";
-        $stmt = $db->prepare($sql);
+    public static function getLimit($limit) {
+        $conn = Database::getConnection();
+        $sql = "SELECT * FROM tour LIMIT ?";
+        $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $limit);
         $stmt->execute();
-        return $stmt->get_result();
+        $result = $stmt->get_result();
+
+        $tours = [];
+        while ($row = $result->fetch_assoc()) {
+            $tours[] = $row;
+        }
+        return $tours; // ✅ Trả về mảng
     }
 }
+
 
 

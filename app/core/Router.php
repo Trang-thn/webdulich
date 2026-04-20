@@ -19,7 +19,14 @@ class Router {
 
         if (isset($this->routes[$method][$path])) {
             list($controller, $function) = explode('@', $this->routes[$method][$path]);
-            require_once __DIR__ . "/../controllers/$controller.php";
+
+            // ✅ Kiểm tra xem có phải API controller không
+            if (strpos($controller, 'ApiController') !== false) {
+                require_once __DIR__ . "/../apicontrollers/$controller.php";
+            } else {
+                require_once __DIR__ . "/../controllers/$controller.php";
+            }
+
             $obj = new $controller();
             $obj->$function();
         } else {
@@ -27,3 +34,4 @@ class Router {
         }
     }
 }
+

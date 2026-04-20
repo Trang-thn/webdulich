@@ -80,14 +80,19 @@ class UserController
 
 
     public function delete()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $this->model->delete($_POST['id']);
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+        $result = $this->model->delete($_POST['id']);
+        if ($result) {
             $_SESSION['toastr'] = ['type' => 'success', 'msg' => 'Xóa thành viên thành công!'];
-            header("Location: /webdulich/user/manage");
-            exit();
+        } else {
+            $_SESSION['toastr'] = ['type' => 'error', 'msg' => 'Không thể xóa thành viên vì đang có đơn đặt tour!'];
         }
+        header("Location: /webdulich/user/manage");
+        exit();
     }
+}
+
     public function registerForm()
     {
         include __DIR__ . "/../views/user/register.php";

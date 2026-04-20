@@ -18,7 +18,7 @@
     min-height: 100vh;
     background: url('/webdulich/public/images/phong_canh.jpg') no-repeat center center;
     background-size: cover;
-    padding: 40px 20px; 
+    padding: 40px 20px;
   }
 
   .form-container {
@@ -34,7 +34,6 @@
 
 .form-container h2 {
     text-align: center;
-    
     margin-bottom: 20px;
     color: #222;
 }
@@ -97,10 +96,10 @@
       <input type="text" value="<?= htmlspecialchars($diachi ?? '') ?>" name="diachi">
 
       <label>Số CMT</label>
-      <input type="text" value="<?= htmlspecialchars($socmt?? '') ?>" name="socmt">
+      <input type="number" value="<?= htmlspecialchars($socmt?? '') ?>" name="socmt">
 
       <label>Số ĐT</label>
-      <input type="text" value="<?= htmlspecialchars($sodt ?? '') ?>" name="sodt">
+      <input type="number" value="<?= htmlspecialchars($sodt ?? '') ?>" name="sodt">
 
       <button type="submit">Đăng ký</button>
     </form>

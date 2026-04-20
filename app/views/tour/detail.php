@@ -68,7 +68,6 @@
             <h2>💬 Bình luận cho tour này</h2>
 
             <!-- Thông báo sau khi gửi bình luận -->
-             
             <?php if (!empty($_SESSION['comment_message'])): ?>
                 <div class="alert alert-info">
                     <?= $_SESSION['comment_message']; ?>

@@ -66,15 +66,17 @@ class User
 
     public function delete($id)
     {
-        $sql = "DELETE FROM THANHVIEN WHERE MaTVien=?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
+        try {
+            $sql = "DELETE FROM THANHVIEN WHERE MaTVien=?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            return false;
+        }
     }
 
 
-
-  
     public function getByUsername($username)
     {
         $sql = "SELECT * FROM thanhvien WHERE Username=? LIMIT 1";
@@ -104,7 +106,7 @@ class User
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param("sssssss",
         $data['username'],
-        $data['password'],   
+        $data['password'],
         $data['hoten'],
         $data['email'],
         $data['diachi'],
@@ -113,8 +115,6 @@ class User
     );
     return $stmt->execute();
 }
-
-
 
     public function getProfile($maTVien)
     {
@@ -129,7 +129,6 @@ class User
         return $stmt->execute();
     }
 
-  
     public function logout()
     {
         unset($_SESSION['user']);

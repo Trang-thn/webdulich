@@ -5,89 +5,97 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f4f4f4;
-    }
+      }
 
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      background: linear-gradient(135deg, #bfa25a, #8e6f3e);
-      color: #fff;
-      padding: 15px;
-    }
-
-
-    .navbar h1 {
+    html, body {
+      top:0;
+      height: 100%;
       margin: 0;
-      font-size: 22px;
-      font-weight: 600;
-    }
+      overflow: hidden; /* chặn cuộn toàn trang */
+      }
 
-    .logout a {
-      color: #fff;
-      text-decoration: none;
-      background: #dc3545;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-    }
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(135deg, #bfa25a, #8e6f3e);
+  color: #fff;
+  padding: 15px;
+}
 
-    .sidebar {
-      width: 240px;
-      background: #343a40;
-      color: #fff;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      padding-top: 70px;
-      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
-    }
+.navbar h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
 
-    .sidebar ul li {
-      list-style: none;
-    }
+.logout a {
+  color: #fff;
+  text-decoration: none;
+  background: #dc3545;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
 
-    .sidebar a {
-      display: block;
-      padding: 14px 20px;
-      color: #fff;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+.sidebar {
+  width: 240px;
+  background: #343a40;
+  color: #fff;
+  position: fixed;
+  top: 70px; /* nằm ngay dưới navbar */
+  bottom: 0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+}
 
-    .sidebar a:hover {
-      background: #495057;
-      transition: 0.3s;
-    }
+.sidebar ul li {
+  list-style: none;
+}
 
-    .content {
-      margin-left: 260px;
-      padding: 100px 20px 20px;
-   
-    }
+.sidebar a {
+  display: block;
+  padding: 14px 20px;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-    iframe {
-      width: 100%;
-      height: calc(100vh - 70px);
-      border: none;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    }
+.sidebar a:hover {
+  background: #495057;
+  transition: 0.3s;
+}
+
+.content {
+  margin-left: 260px;
+  margin-top: 70px;
+  height: calc(100vh - 70px);
+  overflow-y: auto; /* cuộn nội dung ở đây */
+}
+
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+
   </style>
 </head>
 
 <body>
-  
   <div class="navbar d-flex justify-content-between align-items-center">
     <h1>📊 Trang Quản Trị - Admin</h1>
     <div class="logout">
@@ -108,7 +116,6 @@
 
   <main class="content">
     <?php include $viewFile; ?>
-    
   </main>
 </body>
 

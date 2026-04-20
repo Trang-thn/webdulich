@@ -12,16 +12,23 @@ class Comment
 
 
     public function getByTour($maTour)
-    {
-        $sql = "SELECT c.*, tv.Username 
-            FROM comment c 
+{
+    $sql = "SELECT c.*, tv.Username
+            FROM comment c
             JOIN thanhvien tv ON c.MaTVien = tv.MaTVien
-            WHERE c.MaTour = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $maTour);
-        $stmt->execute();
-        return $stmt->get_result();
+            WHERE c.MaTour = ? AND c.TrangThai = 1"; // lọc bình luận đã duyệt
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("i", $maTour);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $comments = [];
+    while ($row = $result->fetch_assoc()) {
+        $comments[] = $row;
     }
+    return $comments; // ✅ trả về mảng
+}
+
 
 
     public function getAll()
