@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý thành viên</title>
-    <link href="" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Segoe UI', sans-serif; }
         .manage-container {
@@ -24,18 +24,17 @@
 <body>
 <div class="manage-container">
     <h2>👥 Quản lý thành viên</h2>
-    <form method="GET" action="/webdulich/user/manage" class="search-bar">
+    <form id="search-form" class="search-bar">
         <input type="text" name="keyword" class="form-control"
-               placeholder="Tìm theo ID, Username, Họ tên, Email"
-               value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>">
+               placeholder="Tìm theo ID, Username, Họ tên, Email">
         <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
-        <a href="/webdulich/user/export?keyword=<?= urlencode($_GET['keyword'] ?? '') ?>" class="btn btn-success">📊 Xuất Excel</a>
-        <!-- <a href="/webdulich/user/import" class="btn btn-success">📥 Nhập Excel</a>
-        <a href="/webdulich/user/add" class="btn btn-success">➕ Thêm mới</a> -->
-        <a href="/webdulich/user/manage" class="btn btn-secondary">🔄 Làm mới</a>
+        <a href="/webdulich/user/export" class="btn btn-success">📊 Xuất Excel</a>
+        <a href="/webdulich/user/import" class="btn btn-success">📥 Nhập Excel</a>
+        <a href="/webdulich/user/add" class="btn btn-success">➕ Thêm mới</a>
+        <button type="button" onclick="loadUsers()" class="btn btn-secondary">🔄 Làm mới</button>
     </form>
 
-    <table class="table table-bordered table-striped align-middle">
+    <table id="user-table" class="table table-bordered table-striped align-middle">
         <thead>
             <tr>
                 <th>STT</th>
@@ -49,50 +48,73 @@
                 <th>Thao tác</th>
             </tr>
         </thead>
-        <tbody>
-            <?php if (!empty($users)): $i=0; ?>
-                <?php foreach ($users as $u): ?>
-                    <tr>
-                        <td><?= ++$i ?></td>
-                        <td><?= $u['MaTVien'] ?></td>
-                        <td><?= htmlspecialchars($u['Username']) ?></td>
-                        <td><?= htmlspecialchars($u['HoTen']) ?></td>
-                        <td><?= htmlspecialchars($u['EmailTVien']) ?></td>
-                        <td><?= htmlspecialchars($u['DiaChi']) ?></td>
-                        <td><?= htmlspecialchars($u['SoCMT']) ?></td>
-                        <td><?= htmlspecialchars($u['SoDT']) ?></td>
-                        <td>
-                            <a href="/webdulich/user/edit?id=<?= $u['MaTVien'] ?>" class="btn btn-warning btn-sm action-btn">Sửa</a>
-                            <form action="/webdulich/user/delete" method="POST" style="display:inline;">
-                                <input type="hidden" name="id" value="<?= $u['MaTVien'] ?>">
-                                <button type="submit" class="btn btn-danger btn-sm action-btn">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="9" class="text-center">Không có dữ liệu</td></tr>
-            <?php endif; ?>
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<?php if (!empty($_SESSION['toastr'])): ?>
+
 <script>
-    $(document).ready(function() {
-        toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "3000"
-        };
-        toastr["<?= $_SESSION['toastr']['type'] ?>"]("<?= $_SESSION['toastr']['msg'] ?>");
+    // Load danh sách user từ API
+    function loadUsers(keyword = '') {
+        fetch('/webdulich/api/users/list?keyword=' + encodeURIComponent(keyword))
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#user-table tbody');
+                tbody.innerHTML = '';
+                if (data.status === 'success' && data.data.length > 0) {
+                    data.data.forEach((u, i) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${i+1}</td>
+                                <td>${u.MaTVien}</td>
+                                <td>${u.Username}</td>
+                                <td>${u.HoTen}</td>
+                                <td>${u.EmailTVien}</td>
+                                <td>${u.DiaChi}</td>
+                                <td>${u.SoCMT}</td>
+                                <td>${u.SoDT}</td>
+                                <td>
+                                    <a href="/webdulich/user/edit?id=${u.MaTVien}" class="btn btn-warning btn-sm action-btn">Sửa</a>
+                                    <button onclick="deleteUser(${u.MaTVien})" class="btn btn-danger btn-sm action-btn">Xóa</button>
+                                </td>
+                            </tr>`;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="9" class="text-center">Không có dữ liệu</td></tr>`;
+                }
+            });
+    }
+
+    // Xóa user qua API
+    function deleteUser(id) {
+        if (!confirm('Bạn có chắc muốn xóa thành viên này?')) return;
+        const formData = new FormData();
+        formData.append('id', id);
+
+        fetch('/webdulich/api/users/delete', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    toastr.success(data.message);
+                    loadUsers();
+                } else {
+                    toastr.error(data.message);
+                }
+            });
+    }
+
+    // Tìm kiếm
+    document.getElementById('search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const keyword = this.querySelector('[name="keyword"]').value;
+        loadUsers(keyword);
     });
+
+    // Load dữ liệu khi mở trang
+    loadUsers();
 </script>
-<?php unset($_SESSION['toastr']); ?>
-<?php endif; ?>
 </body>
 </html>

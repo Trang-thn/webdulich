@@ -114,7 +114,7 @@ iframe {
     </ul>
   </aside>
 
-  <main class="content">
+   <main class="content">
     <?php include $viewFile; ?>
   </main>
 </body>

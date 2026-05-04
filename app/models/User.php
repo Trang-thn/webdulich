@@ -11,44 +11,48 @@ class User
         $this->conn = $database->getConnection();
     }
 
- 
     public function getAll($keyword = null)
     {
         if ($keyword) {
-            $sql = "SELECT * FROM THANHVIEN WHERE Username LIKE ? OR HoTen LIKE ? OR EmailTVien LIKE ?";
+            $sql = "SELECT * FROM thanhvien WHERE Username LIKE ? OR HoTen LIKE ? OR EmailTVien LIKE ?";
             $stmt = $this->conn->prepare($sql);
             $kw = "%$keyword%";
             $stmt->bind_param("sss", $kw, $kw, $kw);
             $stmt->execute();
             return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         }
-        $result = mysqli_query($this->conn, "SELECT * FROM THANHVIEN");
+        $result = mysqli_query($this->conn, "SELECT * FROM thanhvien");
         return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
     public function getById($id)
     {
-        $sql = "SELECT * FROM THANHVIEN WHERE MaTVien=?";
+        $sql = "SELECT * FROM thanhvien WHERE MaTVien=?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function existsUsername($username): bool {
-    $sql = "SELECT COUNT(*) FROM THANHVIEN WHERE Username = ?";
+    public function existsUsername(string $username): bool {
+    $sql = "SELECT COUNT(*) AS cnt FROM THANHVIEN WHERE Username = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param("s", $username);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_row();
-    return $row[0] > 0;
+
+    // Khai báo biến trước khi bind
+    $count = 0;
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    return $count > 0;
 }
 
 
     public function add($data)
     {
-        $sql = "INSERT INTO THANHVIEN (Username, PassWord, HoTen, EmailTVien, DiaChi, SoCMT, SoDT)
+        $sql = "INSERT INTO thanhvien (Username, PassWord, HoTen, EmailTVien, DiaChi, SoCMT, SoDT)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         $pass = password_hash("123456", PASSWORD_DEFAULT);
@@ -58,7 +62,7 @@ class User
 
     public function update($data)
     {
-        $sql = "UPDATE THANHVIEN SET Username=?, HoTen=?, EmailTVien=?, DiaChi=?, SoCMT=?, SoDT=? WHERE MaTVien=?";
+        $sql = "UPDATE thanhvien SET Username=?, HoTen=?, EmailTVien=?, DiaChi=?, SoCMT=?, SoDT=? WHERE MaTVien=?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ssssssi", $data['Username'], $data['HoTen'], $data['EmailTVien'], $data['DiaChi'], $data['SoCMT'], $data['SoDT'], $data['MaTVien']);
         return $stmt->execute();
@@ -67,7 +71,7 @@ class User
     public function delete($id)
     {
         try {
-            $sql = "DELETE FROM THANHVIEN WHERE MaTVien=?";
+            $sql = "DELETE FROM thanhvien WHERE MaTVien=?";
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id);
             return $stmt->execute();
@@ -88,7 +92,7 @@ class User
 
     public function login($username, $password)
     {
-        $sql = "SELECT * FROM THANHVIEN WHERE Username=? LIMIT 1";
+        $sql = "SELECT * FROM thanhvien WHERE Username=? LIMIT 1";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -101,20 +105,21 @@ class User
     }
 
     public function register($data) {
-    $sql = "INSERT INTO THANHVIEN (Username, PassWord, HoTen, EmailTVien, DiaChi, SoCMT, SoDT, VaiTro)
+    $sql = "INSERT INTO thanhvien (Username, PassWord, HoTen, EmailTVien, DiaChi, SoCMT, SoDT, VaiTro)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'user')";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param("sssssss",
-        $data['username'],
-        $data['password'],
-        $data['hoten'],
-        $data['email'],
-        $data['diachi'],
-        $data['socmt'],
-        $data['sodt']
+        $data['Username'],
+        $data['PassWord'],
+        $data['HoTen'],
+        $data['EmailTVien'],
+        $data['DiaChi'],
+        $data['SoCMT'],
+        $data['SoDT']
     );
     return $stmt->execute();
 }
+
 
     public function getProfile($maTVien)
     {
@@ -123,7 +128,7 @@ class User
 
     public function updateProfile($maTVien, $data)
     {
-        $sql = "UPDATE THANHVIEN SET HoTen=?, EmailTVien=?, DiaChi=?, SoCMT=?, SoDT=? WHERE MaTVien=?";
+        $sql = "UPDATE thanhvien SET HoTen=?, EmailTVien=?, DiaChi=?, SoCMT=?, SoDT=? WHERE MaTVien=?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sssssi", $data['HoTen'], $data['EmailTVien'], $data['DiaChi'], $data['SoCMT'], $data['SoDT'], $maTVien);
         return $stmt->execute();

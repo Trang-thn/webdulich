@@ -17,34 +17,37 @@ class AdminApiController
 
     // ✅ API đăng nhập
     public function login()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
 
-            $admin = $this->adminModel->getByUsername($username);
-            if ($admin && $admin['PassAdmin'] === $password) {
-                echo json_encode([
-                    'status' => 'success',
-                    'role' => 'admin',
-                    'data' => $admin
-                ], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-
-            $user = $this->userModel->getByUsername($username);
-            if ($user && password_verify($password, $user['PassWord'])) {
-                echo json_encode([
-                    'status' => 'success',
-                    'role' => 'user',
-                    'data' => $user
-                ], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-
-            echo json_encode(['status' => 'error', 'message' => 'Sai tài khoản hoặc mật khẩu'], JSON_UNESCAPED_UNICODE);
+        $admin = $this->adminModel->getByUsername($username);
+        if ($admin && $admin['PassAdmin'] === $password) {
+            $_SESSION['admin'] = $admin;
+            echo json_encode([
+                'status' => 'success',
+                'role'   => 'admin',
+                'redirect' => '/webdulich/dashboard'
+            ], JSON_UNESCAPED_UNICODE);
+            return;
         }
+
+        $user = $this->userModel->getByUsername($username);
+        if ($user && password_verify($password, $user['PassWord'])) {
+            $_SESSION['user'] = $user;
+            echo json_encode([
+                'status' => 'success',
+                'role'   => 'user',
+                'redirect' => '/webdulich/'
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        echo json_encode(['status' => 'error', 'message' => 'Sai tài khoản hoặc mật khẩu'], JSON_UNESCAPED_UNICODE);
     }
+}
+
 
     // ✅ API đăng ký
     public function register()
@@ -97,15 +100,15 @@ class AdminApiController
     }
 
     // ✅ API thông tin người dùng
-    public function profile()
-    {
-        $userId = $_GET['id'] ?? null;
-        if ($userId) {
-            $user = $this->userModel->getById($userId);
-            echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
-        }
-    }
+    // public function profile()
+    // {
+    //     $userId = $_GET['id'] ?? null;
+    //     if ($userId) {
+    //         $user = $this->userModel->getById($userId);
+    //         echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
+    //     } else {
+    //         echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
+    //     }
+    // }
 
 }

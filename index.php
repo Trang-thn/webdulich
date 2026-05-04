@@ -66,12 +66,13 @@ $router->post('/api/admin/register', 'AdminApiController@register');
 $router->get('/api/admin/dashboard', 'AdminApiController@dashboard');
 $router->get('/api/admin/profile', 'AdminApiController@profile');
 // User
-$router->get('/api/users', 'UserApiController@manage');
+$router->get('/api/users/list', 'UserApiController@list');
+$router->get('/api/users/detail', 'UserApiController@detail');
 $router->post('/api/users/add', 'UserApiController@add');
-$router->get('/api/users/get', 'UserApiController@getById');
 $router->post('/api/users/update', 'UserApiController@update');
 $router->post('/api/users/delete', 'UserApiController@delete');
 $router->post('/api/users/register', 'UserApiController@register');
+$router->get('/api/users/check', 'UserApiController@checkUsername');
 // Tour
 $router->get('/api/tours', 'TourApiController@list');
 $router->get('/api/tours/detail', 'TourApiController@detail');

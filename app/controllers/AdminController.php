@@ -37,7 +37,7 @@ class AdminController
             $user = $this->userModel->getByUsername($username);
             if ($user && password_verify($password, $user['PassWord'])) {
                 $_SESSION['user'] = $user;
-                $tours = Tour::getLimit(8); 
+                $tours = Tour::getLimit(8);
                 include __DIR__ . "/../views/home/home.php";
                 exit();
             }
@@ -64,7 +64,7 @@ class AdminController
 
             if ($this->userModel->existsUsername($username)) {
                 $error = "Tên đăng nhập đã tồn tại!";
-                include __DIR__ . "/../views/user/register.php"; 
+                include __DIR__ . "/../views/user/register.php";
                 return;
             }
 

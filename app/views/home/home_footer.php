@@ -11,8 +11,8 @@
          <div class="info"> 
             <h3>Hỗ trợ</h3> 
             <p>24/7</p> 
-            <p>Địa chỉ: 94 Triều Khúc, Hà Nội</p> 
-            <p>SĐT: 0546546523</p> </div> 
+            <p>Địa chỉ:LK 5A/04 Lô4,KDT Mỗ Lao, Hà Nội</p> 
+            <p>SĐT: (+84) 332337357</p> </div> 
             <div class="info"> 
                <h3>Chính sách</h3> 
                <p>Chính sách bảo mật</p> 

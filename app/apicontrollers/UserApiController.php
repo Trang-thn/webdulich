@@ -11,7 +11,7 @@ class UserApiController
     }
 
     // ✅ Lấy danh sách user (có tìm kiếm)
-    public function manage()
+    public function list()
     {
         $keyword = $_GET['keyword'] ?? null;
         $users = $this->model->getAll($keyword);
@@ -23,7 +23,7 @@ class UserApiController
     public function add()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
+            $username = $_POST['Username'] ?? '';
             if ($this->model->existsUsername($username)) {
                 echo json_encode(['status' => 'error', 'message' => 'Tên đăng nhập đã tồn tại!'], JSON_UNESCAPED_UNICODE);
                 return;
@@ -35,7 +35,7 @@ class UserApiController
     }
 
     // ✅ Lấy thông tin user theo ID
-    public function getById()
+    public function detail()
     {
         $id = $_GET['id'] ?? null;
         if ($id) {
@@ -92,21 +92,22 @@ class UserApiController
             }
 
             $this->model->register([
-                'username' => $username,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'hoten'    => $hoten,
-                'email'    => $email,
-                'diachi'   => $diachi,
-                'socmt'    => $socmt,
-                'sodt'     => $sodt
+                'Username' => $username,
+                'PassWord' => password_hash($password, PASSWORD_DEFAULT),
+                'HoTen'    => $hoten,
+                'EmailTVien' => $email,
+                'DiaChi'   => $diachi,
+                'SoCMT'    => $socmt,
+                'SoDT'     => $sodt
             ]);
+
 
             echo json_encode(['status' => 'success', 'message' => 'Đăng ký thành công!'], JSON_UNESCAPED_UNICODE);
         }
     }
     public function checkUsername()
     {
-        $username = $_GET['username'] ?? '';
+        $username = $_GET['Username'] ?? '';
         $exists = $this->model->existsUsername($username);
         echo json_encode(['exists' => $exists], JSON_UNESCAPED_UNICODE);
     }

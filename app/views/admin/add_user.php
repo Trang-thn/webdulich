@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Thêm thành viên</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="#" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; }
@@ -56,6 +56,7 @@
         @media (max-width: 576px) {
             .add-user { padding: 25px; }
         }
+        #msg { text-align:center; margin-top:15px; font-weight:600; }
     </style>
 </head>
 <body>
@@ -63,7 +64,7 @@
 <div class="container add-user">
     <h2>➕ Thêm thành viên mới</h2>
 
-    <form method="POST" action="/webdulich/user/add">
+    <form id="add-user-form">
         <div class="mb-3">
             <label class="form-label">Username</label>
             <input type="text" name="Username" class="form-control" required>
@@ -99,7 +100,35 @@
             <a href="/webdulich/user/manage" class="btn btn-secondary">⬅️ Quay lại</a>
         </div>
     </form>
+
+    <div id="msg"></div>
 </div>
+
+<script>
+document.getElementById('add-user-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('/webdulich/api/users/add', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(data => {
+        const msg = document.getElementById('msg');
+        if (data.status === 'success') {
+          msg.textContent = data.message;
+          msg.style.color = 'green';
+          setTimeout(() => window.location.href = '/webdulich/user/manage', 1500);
+        } else {
+          msg.textContent = data.message;
+          msg.style.color = 'red';
+        }
+      })
+      .catch(err => {
+        const msg = document.getElementById('msg');
+        msg.textContent = 'Lỗi kết nối API: ' + err;
+        msg.style.color = 'red';
+      });
+});
+</script>
 
 </body>
 </html>
