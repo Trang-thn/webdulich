@@ -166,7 +166,7 @@ let selectedRow  = null;
 function selectTour(row) {
   document.querySelectorAll("table tr").forEach(tr => tr.classList.remove("selected"));
   row.classList.add("selected");
-  selectedRow = row; 
+  selectedRow = row;
   const json = row.getAttribute('data-tour');
   selectedTour = JSON.parse(json);
 }
@@ -248,7 +248,7 @@ function searchTour() {
   const rows = document.querySelectorAll("table tr");
 
   rows.forEach((row, index) => {
-    if (index === 0) return; 
+    if (index === 0) return;
     const tourData = row.getAttribute("data-tour");
     if (!tourData) return;
     const tour = JSON.parse(tourData);

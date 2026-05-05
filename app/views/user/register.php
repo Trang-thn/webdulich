@@ -104,46 +104,48 @@
   </div>
 
   <script>
-    // Kiểm tra username động
-    document.getElementById('username').addEventListener('blur', function() {
-      const val = this.value.trim();
-      if (!val) return;
-      fetch('/webdulich/api/users/check?username=' + encodeURIComponent(val))
-        .then(res => res.json())
-        .then(data => {
-          if (data.exists) {
-            document.getElementById('username-msg').textContent = "Tên đăng nhập đã tồn tại!";
-          } else {
-            document.getElementById('username-msg').textContent = "";
-          }
-        })
-        .catch(() => {
-          document.getElementById('username-msg').textContent = "Không kiểm tra được tên đăng nhập.";
-        });
-    });
+   document.getElementById('register-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
 
-    // Submit form qua API
-    document.getElementById('register-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
+  const pw = formData.get('password');
+  const confirm = formData.get('confirm_password');
+  if (pw !== confirm) {
+    document.getElementById('register-msg').textContent = "Mật khẩu nhập lại không khớp!";
+    document.getElementById('register-msg').style.color = 'red';
+    return;
+  }
 
-      fetch('/webdulich/api/users/register', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'success') {
-            document.getElementById('register-msg').textContent = "Đăng ký thành công!";
-            document.getElementById('register-msg').style.color = 'green';
-            setTimeout(() => window.location.href = '/webdulich/user/login', 1500);
-          } else {
-            document.getElementById('register-msg').textContent = data.message;
-            document.getElementById('register-msg').style.color = 'red';
-          }
-        })
-        .catch(err => {
-          document.getElementById('register-msg').textContent = 'Lỗi kết nối API: ' + err;
-          document.getElementById('register-msg').style.color = 'red';
-        });
-    });
+  const msg = document.getElementById('register-msg');
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = "Đang đăng ký...";
+  msg.textContent = "Đang xử lý...";
+  msg.style.color = "blue";
+
+  try {
+    const res = await fetch('/webdulich/api/admin/register', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      msg.textContent = data.message || "Đăng ký thành công!";
+      msg.style.color = 'green';
+      setTimeout(() => window.location.href = '/webdulich/user/login', 1500);
+    } else {
+      msg.textContent = data.message || "Đăng ký thất bại!";
+      msg.style.color = 'red';
+    }
+  } catch (err) {
+    msg.textContent = 'Lỗi kết nối API: ' + err.message;
+    msg.style.color = 'red';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Đăng ký";
+  }
+});
+
   </script>
 </body>
 </html>

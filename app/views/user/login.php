@@ -5,61 +5,71 @@
   <meta charset="UTF-8">
   <title>Đăng nhập</title>
   <link rel="stylesheet" href="/webdulich/public/css/login.css">
-
 </head>
 <body class="auth-background">
   <div class="form-container">
     <h2>Đăng Nhập</h2>
 
-    <?php if (!empty($error)): ?>
-      <div style="text-align:center; color:red;"><?= htmlspecialchars($error) ?></div>
-    <?php elseif (!empty($message)): ?>
-      <div style="text-align:center; color:green;"><?= htmlspecialchars($message) ?></div>
-    <?php endif; ?>
-
-    <!-- <form method="POST" action="/webdulich/login">
-      <label>Tài khoản</label>
-      <input type="text" name="username" required>
-      <label>Mật khẩu</label>
-      <input type="password" name="password" required>
-      <button type="submit">Đăng nhập</button>
-    </form> -->
-
     <form id="login-form">
-  <label>Tài khoản</label>
-  <input type="text" name="username" required>
-  <label>Mật khẩu</label>
-  <input type="password" name="password" required>
-  <button type="submit">Đăng nhập</button>
-</form>
-<p style="margin-top:10px;">
+      <label>Tài khoản</label>
+      <input type="text" name="username" required autocomplete="off">
+      <label>Mật khẩu</label>
+      <input type="password" name="password" required autocomplete="off">
+      <button type="submit">Đăng nhập</button>
+    </form>
+
+    <p style="margin-top:10px;">
       Bạn chưa có tài khoản? <a href="/webdulich/user/register">Đăng kí ngay</a>
     </p>
-<div id="login-msg" style="text-align:center; margin-top:10px;"></div>
 
-<script>
-document.getElementById('login-form').addEventListener('submit', function(e) {
+    <div id="login-msg" style="text-align:center; margin-top:10px;"></div>
+
+    <script>
+document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const formData = new FormData(this);
 
-  fetch('/webdulich/api/admin/login', { method: 'POST', body: formData })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === 'success') {
-        if (data.role === 'admin') {
-          window.location.href = '/webdulich/dashboard';
-        } else {
-          window.location.href = '/webdulich/';
-        }
-      } else {
-        document.getElementById('login-msg').textContent = data.message;
-        document.getElementById('login-msg').style.color = 'red';
-      }
-    })
-    .catch(err => {
-      document.getElementById('login-msg').textContent = 'Lỗi kết nối API: ' + err;
-      document.getElementById('login-msg').style.color = 'red';
+  const msg = document.getElementById('login-msg');
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = "Đang đăng nhập...";
+
+  msg.textContent = "Đang xử lý...";
+  msg.style.color = "blue";
+
+  try {
+    const res = await fetch('/webdulich/api/admin/login', {
+      method: 'POST',
+      body: formData
     });
+
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      msg.textContent = data.message || "Đăng nhập thành công!";
+      msg.style.color = "green";
+
+      // Điều hướng theo API trả về
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      } else if (data.role === 'admin') {
+        window.location.href = '/webdulich/dashboard';
+      } else {
+        window.location.href = '/webdulich/';
+      }
+    } else {
+      msg.textContent = data.message || "Đăng nhập thất bại!";
+      msg.style.color = "red";
+    }
+  } catch (err) {
+    msg.textContent = "Lỗi kết nối API: " + err.message;
+    msg.style.color = "red";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Đăng nhập";
+  }
 });
 </script>
 

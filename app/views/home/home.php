@@ -12,25 +12,24 @@
 <body>
    <!--  phần top-->
    <div class="admin">
-      <?php if (isset($_SESSION['user'])): ?>
-         <div class="dropdown">
-            <a href="#" class="dropdown-toggle">
-               <i class='bx bxs-user'></i>
-               <?= htmlspecialchars($_SESSION['user']['Username']) ?>
-            </a>
-            <div class="dropdown-menu">
-               <?php if (isset($_SESSION['user'])): ?>
-                  <a href="/webdulich/booking/userHistory">Lịch sử đặt tour</a>
-               <?php endif; ?>
-               <a href="/webdulich/profile">Thông tin cá nhân</a>
-               <a href="/webdulich/logout">Đăng xuất</a>
-            </div>
-         </div>
-      <?php else: ?>
-         <i class='bx bxs-user' style="color:black"></i>
-         <p><a href="/webdulich/user/login" style="color:black">Đăng nhập</a></p>
-      <?php endif; ?>
-   </div>
+  <?php if (isset($_SESSION['user'])): ?>
+    <div class="dropdown">
+      <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+        <i class='bx bxs-user'></i>
+        <?= htmlspecialchars($_SESSION['user']['Username']) ?>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="/webdulich/booking/userHistory">Lịch sử đặt tour</a></li>
+        <li><a class="dropdown-item" href="/webdulich/profile">Thông tin cá nhân</a></li>
+        <li><a class="dropdown-item" href="/webdulich/logout">Đăng xuất</a></li>
+      </ul>
+    </div>
+  <?php else: ?>
+    <i class='bx bxs-user' style="color:black"></i>
+    <p><a href="/webdulich/user/login" style="color:black">Đăng nhập</a></p>
+  <?php endif; ?>
+</div>
+
 
    <!--phần logo-->
    <div class="logo">

@@ -39,6 +39,7 @@
         .btn-secondary { padding: 10px 26px; border-radius: 12px; font-weight: 600; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); transition: 0.3s; }
         @media (max-width: 576px) { .profile-card { padding: 25px; } }
+        #profile-msg { text-align:center; margin-top:15px; font-weight:500; }
     </style>
 </head>
 <body class="auth-background">
@@ -83,6 +84,7 @@
                     <button type="button" onclick="toggleEdit()" class="btn btn-secondary">❌ Hủy</button>
                 </div>
             </form>
+            <div id="profile-msg"></div>
         </div>
     </div>
 
@@ -116,27 +118,48 @@
                   document.querySelector('[name="DiaChi"]').value = u.DiaChi;
                   document.querySelector('[name="SoCMT"]').value = u.SoCMT;
                   document.querySelector('[name="SoDT"]').value = u.SoDT;
+                } else {
+                  document.getElementById('profile-view').innerHTML = "<p style='color:red;'>Không tải được dữ liệu người dùng.</p>";
                 }
+              })
+              .catch(() => {
+                document.getElementById('profile-view').innerHTML = "<p style='color:red;'>Lỗi kết nối API.</p>";
               });
         }
 
         // Submit cập nhật profile qua API
-        document.getElementById('profile-form').addEventListener('submit', function(e) {
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            const btn = this.querySelector('button[type="submit"]');
+            const msg = document.getElementById('profile-msg');
 
-            fetch('/webdulich/api/users/update', { method: 'POST', body: formData })
-              .then(res => res.json())
-              .then(data => {
+            btn.disabled = true;
+            btn.textContent = "Đang lưu...";
+            msg.textContent = "Đang xử lý...";
+            msg.style.color = "blue";
+
+            try {
+                const res = await fetch('/webdulich/api/users/update', { method: 'POST', body: formData });
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+
                 if (data.status === 'success') {
-                  alert('Cập nhật thành công!');
-                  toggleEdit();
-                  loadProfile();
+                    msg.textContent = data.message || 'Cập nhật thành công!';
+                    msg.style.color = 'green';
+                    toggleEdit();
+                    loadProfile();
                 } else {
-                  alert(data.message);
+                    msg.textContent = data.message || 'Cập nhật thất bại!';
+                    msg.style.color = 'red';
                 }
-              })
-              .catch(err => alert('Lỗi kết nối API: ' + err));
+            } catch (err) {
+                msg.textContent = 'Lỗi kết nối API: ' + err.message;
+                msg.style.color = 'red';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "💾 Lưu";
+            }
         });
 
         // Load profile khi mở trang

@@ -6,13 +6,12 @@ class Admin
     public function __construct()
     {
         $database = new Database();
-        $this->conn = $database->getConnection(); 
+        $this->conn = $database->getConnection();
     }
 
 
     public function countTable($table)
     {
-        
         $allowed = ['TOUR', 'THANHVIEN', 'DATTOUR', 'COMMENT'];
         if (!in_array(strtoupper($table), $allowed)) {
             return 0;

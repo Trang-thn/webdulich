@@ -1,114 +1,65 @@
 <?php
-require_once __DIR__ . "/../models/User.php";
+require_once __DIR__ . "/../services/UserService.php";
 
-class UserApiController
-{
-    private $model;
+class UserApiController {
+    private $service;
 
-    public function __construct()
-    {
-        $this->model = new User();
+    public function __construct() {
+        $this->service = new UserService();
     }
 
-    // ✅ Lấy danh sách user (có tìm kiếm)
-    public function list()
-    {
+    public function list() {
         $keyword = $_GET['keyword'] ?? null;
-        $users = $this->model->getAll($keyword);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['status' => 'success', 'data' => $users], JSON_UNESCAPED_UNICODE);
+        $users = $this->service->getAllUsers($keyword);
+        $this->jsonResponse(200, ['status'=>'success','data'=>$users]);
     }
 
-    // ✅ Thêm user mới
-    public function add()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['Username'] ?? '';
-            if ($this->model->existsUsername($username)) {
-                echo json_encode(['status' => 'error', 'message' => 'Tên đăng nhập đã tồn tại!'], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-
-            $this->model->add($_POST);
-            echo json_encode(['status' => 'success', 'message' => 'Thêm thành viên thành công!'], JSON_UNESCAPED_UNICODE);
+    public function add() {
+        try {
+            $this->service->createUser($_POST);
+            $this->jsonResponse(201, ['status'=>'success','message'=>'Thêm thành viên thành công!']);
+        } catch (Exception $e) {
+            $this->jsonResponse(400, ['status'=>'error','message'=>$e->getMessage()]);
         }
     }
 
-    // ✅ Lấy thông tin user theo ID
-    public function detail()
-    {
-        $id = $_GET['id'] ?? null;
-        if ($id) {
-            $user = $this->model->getById($id);
-            echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
+    public function detail() {
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        return $this->jsonResponse(400, ['status'=>'error','message'=>'Thiếu ID']);
+    }
+    $user = $this->service->getUserById($id);
+    if ($user) {
+        $this->jsonResponse(200, ['status'=>'success','data'=>$user]);
+    } else {
+        $this->jsonResponse(404, ['status'=>'error','message'=>'Không tìm thấy người dùng']);
+    }
+}
+
+
+    public function update() {
+    try {
+        $this->service->updateUser($_POST);
+        $this->jsonResponse(200, ['status'=>'success','message'=>'Cập nhật thành viên thành công!']);
+    } catch (Exception $e) {
+        $this->jsonResponse(400, ['status'=>'error','message'=>$e->getMessage()]);
+    }
+}
+
+    public function delete() {
+        $id = $_POST['id'] ?? null;
+        if (!$id) return $this->jsonResponse(400, ['status'=>'error','message'=>'Thiếu ID']);
+        $result = $this->service->deleteUser($id);
+        if ($result) {
+            $this->jsonResponse(200, ['status'=>'success','message'=>'Xóa thành viên thành công!']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu ID'], JSON_UNESCAPED_UNICODE);
+            $this->jsonResponse(409, ['status'=>'error','message'=>'Không thể xóa thành viên vì đang có đơn đặt tour!']);
         }
     }
 
-    // ✅ Cập nhật user
-    public function update()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->update($_POST);
-            echo json_encode(['status' => 'success', 'message' => 'Cập nhật thành viên thành công!'], JSON_UNESCAPED_UNICODE);
-        }
-    }
-
-    // ✅ Xóa user
-    public function delete()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $result = $this->model->delete($_POST['id']);
-            if ($result) {
-                echo json_encode(['status' => 'success', 'message' => 'Xóa thành viên thành công!'], JSON_UNESCAPED_UNICODE);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Không thể xóa thành viên vì đang có đơn đặt tour!'], JSON_UNESCAPED_UNICODE);
-            }
-        }
-    }
-
-    // ✅ Đăng ký user
-    public function register()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $confirm  = $_POST['confirm_password'] ?? '';
-            $hoten   = $_POST['hoten'] ?? '';
-            $email   = $_POST['email'] ?? '';
-            $diachi  = $_POST['diachi'] ?? '';
-            $socmt   = $_POST['socmt'] ?? '';
-            $sodt    = $_POST['sodt'] ?? '';
-
-            if ($this->model->existsUsername($username)) {
-                echo json_encode(['status' => 'error', 'message' => 'Tên đăng nhập đã tồn tại!'], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-
-            if ($password !== $confirm) {
-                echo json_encode(['status' => 'error', 'message' => 'Mật khẩu nhập lại không khớp'], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-
-            $this->model->register([
-                'Username' => $username,
-                'PassWord' => password_hash($password, PASSWORD_DEFAULT),
-                'HoTen'    => $hoten,
-                'EmailTVien' => $email,
-                'DiaChi'   => $diachi,
-                'SoCMT'    => $socmt,
-                'SoDT'     => $sodt
-            ]);
-
-
-            echo json_encode(['status' => 'success', 'message' => 'Đăng ký thành công!'], JSON_UNESCAPED_UNICODE);
-        }
-    }
-    public function checkUsername()
-    {
-        $username = $_GET['Username'] ?? '';
-        $exists = $this->model->existsUsername($username);
-        echo json_encode(['exists' => $exists], JSON_UNESCAPED_UNICODE);
+    private function jsonResponse($statusCode, $data) {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
