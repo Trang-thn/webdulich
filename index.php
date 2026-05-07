@@ -34,6 +34,8 @@ $router->get('/search', 'HomeController@search');
 $router->get('/tour','TourController@index');
 $router->get('/detail','TourController@detail');
 $router->get('/tour/manage','TourController@manage');
+$router->get('/tour/add','TourController@add');
+$router->get('/tour/edit','TourController@edit');
 // Booking
 $router->get('/booking/form', 'BookingController@form');
 $router->post('/booking/create', 'BookingController@createBooking');
@@ -73,9 +75,17 @@ $router->post('/api/users/update', 'UserApiController@update');
 $router->post('/api/users/delete', 'UserApiController@delete');
 $router->get('/api/users/check', 'UserApiController@checkUsername');
 // Tour
+$router->get('/tour/add', 'TourController@add');
+$router->get('/tour/edit', 'TourController@edit');
+
 $router->get('/api/tours', 'TourApiController@list');
 $router->get('/api/tours/detail', 'TourApiController@detail');
 $router->get('/api/tours/manage', 'TourApiController@manage');
+$router->post('/api/tours/add', 'TourApiController@add');
+$router->post('/api/tours/edit', 'TourApiController@edit');
+$router->post('/api/tours/delete', 'TourApiController@delete');
+$router->get('/api/tours/search', 'TourApiController@search');
+
 // Home
 $router->get('/api/home', 'HomeApiController@index');
 $router->get('/api/home/search', 'HomeApiController@search');

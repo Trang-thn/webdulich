@@ -1,78 +1,61 @@
 <?php
 require_once __DIR__ . "/../../config/database.php";
 
-
-class Tour
-{
+class Tour {
     public static function getAll() {
         $conn = Database::getConnection();
-        $sql = "SELECT * FROM tour";
-        $result = $conn->query($sql);
-
-        $tours = [];
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $tours[] = $row;
-            }
-        }
-        return $tours; // ✅ Trả về mảng thay vì mysqli_result
+        $result = $conn->query("SELECT * FROM tour");
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-
-    public static function getById($id)
-{
-    $conn = Database::getConnection();
-    $stmt = $conn->prepare("SELECT * FROM tour WHERE MaTour = ? LIMIT 1");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_assoc(); // ✅ trả về mảng
-}
-
-    public static function getOtherTours($id)
-    {
-
+    public static function search($keyword) {
         $conn = Database::getConnection();
-        $id = (int)$id;
-
-        $sql = "SELECT * FROM TOUR
-                WHERE MaTour != $id
-                ORDER BY RAND()
-                LIMIT 6";
-
-        return $conn->query($sql);
+        $stmt = $conn->prepare("SELECT * FROM tour WHERE TenTour LIKE ?");
+        $kw = "%$keyword%";
+        $stmt->bind_param("s", $kw);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-
-    public static function insert($data)
-    {
+    public static function getById($id) {
         $conn = Database::getConnection();
-        $sql = "INSERT INTO TOUR 
-        (MaLoai, TenTour, Gia, HinhAnh, MoTa) 
-        VALUES (
-            '{$data['MaLoai']}',
-            '{$data['TenTour']}',
-            '{$data['Gia']}',
-            '{$data['HinhAnh']}',
-            '{$data['MoTa']}'
-        )";
-        return $conn->query($sql);
+        $stmt = $conn->prepare("SELECT * FROM tour WHERE MaTour = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc(); // trả về 1 dòng dữ liệu
     }
 
-    public static function delete($id)
-    {
+
+    public static function insert($data, $AnhTourString) {
         $conn = Database::getConnection();
-        return $conn->query("DELETE FROM TOUR WHERE MaTour=$id");
+        $stmt = $conn->prepare("INSERT INTO tour (TenTour, GiaTour, TGTour, DiemKhoiHanh, NgayKhoiHanh, NoiDungTour, AnhTour)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sdsssss",
+            $data['TenTour'], $data['GiaTour'], $data['TGTour'],
+            $data['DiemKhoiHanh'], $data['NgayKhoiHanh'],
+            $data['NoiDungTour'], $AnhTourString
+        );
+        return $stmt->execute();
     }
-    //binh
-    public static function getTourById($id)
-{
-    $conn = Database::getConnection();
-    $id = intval($id);
-    $sql = "SELECT * FROM TOUR WHERE MaTour = $id LIMIT 1";
-    $result = $conn->query($sql);
-    return $result ? $result->fetch_assoc() : null;
-}
-//linh
+
+    public static function update($data, $AnhTourString) {
+        $conn = Database::getConnection();
+        $stmt = $conn->prepare("UPDATE tour SET TenTour=?, GiaTour=?, TGTour=?, DiemKhoiHanh=?, NgayKhoiHanh=?, NoiDungTour=?, AnhTour=? WHERE MaTour=?");
+        $stmt->bind_param("sdsssssi",
+            $data['TenTour'], $data['GiaTour'], $data['TGTour'],
+            $data['DiemKhoiHanh'], $data['NgayKhoiHanh'],
+            $data['NoiDungTour'], $AnhTourString, $data['MaTour']
+        );
+        return $stmt->execute();
+    }
+
+    public static function delete($id) {
+        $conn = Database::getConnection();
+        $stmt = $conn->prepare("DELETE FROM tour WHERE MaTour=?");
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
+    //linh
     public static function getLimit($limit) {
         $conn = Database::getConnection();
         $sql = "SELECT * FROM tour LIMIT ?";
@@ -88,6 +71,3 @@ class Tour
         return $tours; // ✅ Trả về mảng
     }
 }
-
-
-
