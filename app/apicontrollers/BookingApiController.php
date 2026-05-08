@@ -1,125 +1,150 @@
 <?php
-require_once __DIR__ . "/../models/DatTour.php";
-require_once __DIR__ . "/../models/ChiTietDat.php";
-require_once __DIR__ . "/../models/Tour.php";
+require_once __DIR__ . "/../services/BookingService.php";
 
 class BookingApiController
 {
-    // ✅ Tạo booking mới
-    public function createBooking()
+    private $service;
+
+    public function __construct()
     {
-        $tourId = $_POST['tour_id'] ?? null;
-        $soLuongKhach = $_POST['soLuongKhach'] ?? null;
-        $ngayDi = $_POST['ngayDi'] ?? null;
+        $this->service = new BookingService();
+    }
 
-        if (!$tourId || !$soLuongKhach || !$ngayDi) {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu dữ liệu'], JSON_UNESCAPED_UNICODE);
-            return;
+    // ✅ Tạo booking mới
+    public function create()
+    {
+        try {
+            $maTVien = $_SESSION['user']['MaTVien'] ?? null;
+            if (!$maTVien) {
+                return $this->jsonResponse(401, ['status' => 'error', 'message' => 'Bạn cần đăng nhập để đặt tour!']);
+            }
+
+            $data = [
+                'tourId'       => $_POST['tour_id'] ?? null,
+                'soLuongKhach' => $_POST['soLuongKhach'] ?? null,
+                'ngayDi'       => $_POST['ngayDi'] ?? null,
+                'capKS'        => $_POST['capKS'] ?? null,
+                'khac'         => $_POST['khac'] ?? null
+            ];
+            if (empty($data['ngayDi'])) {
+                throw new Exception("Ngày đi không hợp lệ, vui lòng chọn ngày đi!");
+            }
+
+            if (strtotime($data['ngayDi']) <= strtotime(date("Y-m-d"))) {
+                throw new Exception("Ngày đi không hợp lệ, phải lớn hơn ngày hôm nay");
+            }
+
+
+            $maDat = $this->service->createBooking($data, $maTVien);
+
+            return $this->jsonResponse(201, [
+                'status' => 'success',
+                'message' => 'Đặt tour thành công!',
+                'maDat' => $maDat
+            ]);
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        if (strtotime($ngayDi) < strtotime(date("Y-m-d"))) {
-            echo json_encode(['status' => 'error', 'message' => 'Ngày đi không hợp lệ'], JSON_UNESCAPED_UNICODE);
-            return;
-        }
-
-        $capKS = $_POST['capKS'] ?? '';
-        $khac = $_POST['khac'] ?? '';
-        $maTVien = $_SESSION['user']['MaTVien'] ?? null;
-
-        if (!$maTVien) {
-            echo json_encode(['status' => 'error', 'message' => 'Bạn cần đăng nhập để đặt tour!'], JSON_UNESCAPED_UNICODE);
-            return;
-        }
-
-        $datTourModel = new DatTour();
-        $maDat = $datTourModel->createDatTour($maTVien);
-
-        $chiTietModel = new ChiTietDat();
-        $chiTietModel->addChiTiet($maDat, $tourId, $ngayDi, $soLuongKhach, $capKS, $khac);
-
-        echo json_encode(['status' => 'success', 'message' => 'Đặt tour thành công!', 'maDat' => $maDat], JSON_UNESCAPED_UNICODE);
     }
 
     // ✅ Cập nhật booking
-    public function updateBooking()
+    public function update()
     {
-        $maDat = $_POST['maDat'] ?? null;
-        $soLuongKhach = $_POST['soLuongKhach'] ?? null;
-        $ngayDi = $_POST['ngayDi'] ?? null;
-        $capKS = $_POST['capKS'] ?? '';
-        $khac = $_POST['khac'] ?? '';
+        try {
+            $maDat = $_POST['maDat'] ?? null;
+            if (!$maDat) {
+                return $this->jsonResponse(400, ['status' => 'error', 'message' => 'Thiếu mã đặt']);
+            }
 
-        if (!$maDat || !$ngayDi) {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu dữ liệu'], JSON_UNESCAPED_UNICODE);
-            return;
+            $data = [
+                'soLuongKhach' => $_POST['soLuongKhach'] ?? null,
+                'ngayDi'       => $_POST['ngayDi'] ?? null,
+                'capKS'        => $_POST['capKS'] ?? null,
+                'khac'         => $_POST['khac'] ?? null
+            ];
+            if (empty($data['ngayDi'])) {
+                throw new Exception("Ngày đi không hợp lệ, vui lòng chọn ngày đi!");
+            }
+
+            if (strtotime($data['ngayDi']) <= strtotime(date("Y-m-d"))) {
+                throw new Exception("Ngày đi không hợp lệ, phải lớn hơn ngày hôm nay");
+            }
+
+
+            $this->service->updateBooking($maDat, $data);
+            return $this->jsonResponse(200, ['status' => 'success', 'message' => "Đơn đặt #$maDat đã được cập nhật thành công!"]);
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        if (strtotime($ngayDi) < strtotime(date("Y-m-d"))) {
-            echo json_encode(['status' => 'error', 'message' => 'Ngày đi không hợp lệ'], JSON_UNESCAPED_UNICODE);
-            return;
-        }
-
-        $chiTietModel = new ChiTietDat();
-        $chiTietModel->updateChiTiet($maDat, $soLuongKhach, $ngayDi, $capKS, $khac);
-
-        echo json_encode(['status' => 'success', 'message' => "Đơn đặt #$maDat đã được cập nhật thành công!"], JSON_UNESCAPED_UNICODE);
     }
 
     // ✅ Hủy booking
-    public function cancelBooking()
+    public function cancel()
     {
-        $maDat = $_POST['maDat'] ?? null;
-        if (!$maDat) {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu mã đặt'], JSON_UNESCAPED_UNICODE);
-            return;
+        try {
+            $maDat = $_POST['maDat'] ?? null;
+            if (!$maDat) {
+                return $this->jsonResponse(400, ['status' => 'error', 'message' => 'Thiếu mã đặt']);
+            }
+            $this->service->cancelBooking($maDat);
+            return $this->jsonResponse(200, ['status' => 'success', 'message' => "Đơn đặt #$maDat đã được hủy thành công!"]);
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        $chiTietModel = new ChiTietDat();
-        $chiTietModel->deleteByMaDat($maDat);
-
-        $datTourModel = new DatTour();
-        $datTourModel->deleteDatTour($maDat);
-
-        echo json_encode(['status' => 'success', 'message' => "Đơn đặt #$maDat đã được hủy thành công!"], JSON_UNESCAPED_UNICODE);
     }
 
     // ✅ Lịch sử booking của user
     public function userHistory()
     {
-        $maTVien = $_SESSION['user']['MaTVien'] ?? null;
-        if (!$maTVien) {
-            echo json_encode(['status' => 'error', 'message' => 'Bạn cần đăng nhập'], JSON_UNESCAPED_UNICODE);
-            return;
+        try {
+            $maTVien = $_SESSION['user']['MaTVien'] ?? null;
+            if (!$maTVien) {
+                return $this->jsonResponse(401, ['status' => 'error', 'message' => 'Bạn cần đăng nhập']);
+            }
+            $bookings = $this->service->getBookingsByUser($maTVien);
+            return $this->jsonResponse(200, ['status' => 'success', 'data' => $bookings]);
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        $datTourModel = new DatTour();
-        $bookings = $datTourModel->getBookingsByUser($maTVien);
-
-        echo json_encode(['status' => 'success', 'data' => $bookings], JSON_UNESCAPED_UNICODE);
     }
 
     // ✅ Quản lý booking (admin)
     public function manage()
     {
-        $datTourModel = new DatTour();
-        $keyword = $_GET['keyword'] ?? null;
-        $bookings = $datTourModel->getAllBookings($keyword);
-
-        echo json_encode(['status' => 'success', 'data' => $bookings], JSON_UNESCAPED_UNICODE);
+        try {
+            $keyword = $_GET['keyword'] ?? null;
+            $bookings = $this->service->getAllBookings($keyword);
+            return $this->jsonResponse(200, ['status' => 'success', 'data' => $bookings]);
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
+        }
     }
 
     // ✅ Chi tiết booking
     public function detail()
     {
-        $maDat = $_GET['maDat'] ?? null;
-        if (!$maDat) {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu mã đặt'], JSON_UNESCAPED_UNICODE);
-            return;
+        try {
+            $maDat = $_GET['maDat'] ?? null;
+            if (!$maDat) {
+                return $this->jsonResponse(400, ['status' => 'error', 'message' => 'Thiếu mã đặt']);
+            }
+            $booking = $this->service->getBookingById($maDat);
+            if ($booking) {
+                return $this->jsonResponse(200, ['status' => 'success', 'data' => $booking]);
+            } else {
+                return $this->jsonResponse(404, ['status' => 'error', 'message' => 'Không tìm thấy booking']);
+            }
+        } catch (Exception $e) {
+            return $this->jsonResponse(400, ['status' => 'error', 'message' => $e->getMessage()]);
         }
+    }
 
-        $datTourModel = new DatTour();
-        $booking = $datTourModel->getBookingById($maDat);
-
-        echo json_encode(['status' => 'success', 'data' => $booking], JSON_UNESCAPED_UNICODE);
+    // ✅ Helper trả JSON
+    private function jsonResponse($statusCode, $data)
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        exit;
     }
 }

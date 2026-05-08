@@ -80,12 +80,13 @@ $router->get('/api/tours/manage', 'TourApiController@manage');
 $router->get('/api/home', 'HomeApiController@index');
 $router->get('/api/home/search', 'HomeApiController@search');
 // Booking
-$router->post('/api/bookings/create', 'BookingApiController@createBooking');
-$router->post('/api/bookings/update', 'BookingApiController@updateBooking');
-$router->post('/api/bookings/cancel', 'BookingApiController@cancelBooking');
+$router->post('/api/bookings/create', 'BookingApiController@create');
+$router->post('/api/bookings/update', 'BookingApiController@update');
+$router->post('/api/bookings/cancel', 'BookingApiController@cancel');
 $router->get('/api/bookings/user', 'BookingApiController@userHistory');
 $router->get('/api/bookings/manage', 'BookingApiController@manage');
 $router->get('/api/bookings/detail', 'BookingApiController@detail');
+
 // Comment
 $router->get('/api/comments', 'CommentApiController@listAll');
 $router->get('/api/comments/byTour', 'CommentApiController@listByTour');
