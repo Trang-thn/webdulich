@@ -188,15 +188,26 @@
 
 
     // Tìm kiếm bình luận theo tour
+    // Tìm kiếm bình luận theo tour (cho admin)
     function searchComments() {
         const maTour = document.getElementById("searchTour").value.trim();
         if (!maTour) return;
-        fetch(`/webdulich/api/comments/byTour?id=${maTour}`)
+        fetch(`/webdulich/api/comments/allByTour?id=${maTour}`)
             .then(res => res.json())
             .then(data => {
-                if (data.status === "success") renderComments(data.data);
+                if (data.status === "success") {
+                    renderComments(data.data);
+                } else {
+                    document.getElementById("commentTableBody").innerHTML =
+                        "<tr><td colspan='7'>Không có dữ liệu</td></tr>";
+                }
+            })
+            .catch(() => {
+                document.getElementById("commentTableBody").innerHTML =
+                    "<tr><td colspan='7'>Lỗi tải dữ liệu</td></tr>";
             });
     }
+
 
 
     // Xóa bình luận

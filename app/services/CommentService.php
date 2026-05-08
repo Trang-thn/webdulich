@@ -13,12 +13,28 @@ class CommentService {
     }
 
     public function getCommentsByTour($maTour) {
-        return $this->commentModel->getByTour($maTour);
+        return $this->commentModel->getByTour($maTour); // cho user
+    }
+
+    public function getAllCommentsByTour($maTour) {
+        return $this->commentModel->getAllByTour($maTour); // cho admin
     }
 
     public function addComment($maTVien, $maTour, $noiDungCom, $vote) {
-        $maCom = uniqid('MC'); // tạo mã comment
-        return $this->commentModel->add($maCom, $maTVien, $maTour, $noiDungCom, $vote);
+        if (strlen(trim($noiDungCom)) < 5) {
+            return ['status' => 'error', 'message' => 'Nội dung bình luận quá ngắn'];
+        }
+        if ($vote < 1 || $vote > 5) {
+            $vote = 5;
+        }
+
+        $maCom = uniqid('MC');
+        $result = $this->commentModel->add($maCom, $maTVien, $maTour, $noiDungCom, $vote);
+
+        if ($result) {
+            return ['status' => 'success', 'message' => 'Bình luận đã gửi, cần admin phê duyệt.'];
+        }
+        return ['status' => 'error', 'message' => 'Thêm bình luận thất bại'];
     }
 
     public function deleteComment($maCom) {
@@ -27,9 +43,5 @@ class CommentService {
 
     public function approveComment($maCom) {
         return $this->commentModel->approve($maCom);
-    }
-
-    public function searchCommentsByTour($maTour) {
-        return $this->commentModel->searchByTour($maTour);
     }
 }
