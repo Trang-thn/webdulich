@@ -1,19 +1,15 @@
 <?php
 require_once __DIR__ . "/../services/CommentService.php";
 
-class CommentApiController
-{
+class CommentApiController {
     private $commentService;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->commentService = new CommentService();
     }
 
     // GET /api/comments
-    // GET /api/comments
-    public function listAll()
-    {
+    public function listAll() {
         $comments = $this->commentService->getAllComments();
         $data = [];
         while ($row = $comments->fetch_assoc()) {
@@ -23,8 +19,7 @@ class CommentApiController
     }
 
     // GET /api/comments/tour?id=...
-    public function listByTour()
-    {
+    public function listByTour() {
         $maTour = $_GET['id'] ?? null;
         if (!$maTour) {
             $this->jsonResponse('error', null, 'Thiếu mã tour');
@@ -35,8 +30,7 @@ class CommentApiController
     }
 
     // POST /api/comments
-    public function add()
-    {
+    public function add() {
         $maTVien = $_SESSION['user']['MaTVien'] ?? null;
         if (!$maTVien) {
             $this->jsonResponse('error', null, 'Bạn cần đăng nhập để bình luận!');
@@ -53,8 +47,7 @@ class CommentApiController
     }
 
     // DELETE /api/comments/{id}
-    public function deleteAdmin()
-    {
+    public function deleteAdmin() {
         $maCom = $_POST['maCom'] ?? null;
         if (!$maCom) {
             $this->jsonResponse('error', null, 'Thiếu mã comment');
@@ -65,8 +58,7 @@ class CommentApiController
     }
 
     // PUT /api/comments/approve/{id}
-    public function approveAdmin()
-    {
+    public function approveAdmin() {
         $maCom = $_POST['maCom'] ?? null;
         if (!$maCom) {
             $this->jsonResponse('error', null, 'Thiếu mã comment');
@@ -76,8 +68,7 @@ class CommentApiController
         $this->jsonResponse('success', null, 'Bình luận đã được duyệt!');
     }
 
-    private function jsonResponse($status, $data = null, $message = null)
-    {
+    private function jsonResponse($status, $data = null, $message = null) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'status' => $status,
