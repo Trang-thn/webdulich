@@ -56,12 +56,12 @@
           </ul>
        </div>
        <div id="divRight">
-          <form action="/webdulich/search" method="GET">
-             <input type="text" name="keyword" id="txtSearch" placeholder="Search">
-             <button type="submit" id="btnsearch">
-                <i class='bx bx-search'></i>
-             </button>
-          </form>
+          <form id="search-form">
+            <input type="text" name="keyword" id="txtSearch" placeholder="Search">
+            <button type="submit" id="btnsearch">
+               <i class='bx bx-search'></i>
+            </button>
+         </form>
        </div>
 
 

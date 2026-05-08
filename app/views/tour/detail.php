@@ -99,27 +99,28 @@ if (id) {
       }
     });
 
+  
   // Load comments
-  fetch('/webdulich/api/comments/listByTour?id=' + id)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === 'success') {
-        const list = document.getElementById('comment-list');
-        list.innerHTML = '';
-        if (data.data.length > 0) {
-          data.data.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'comment-item border-bottom py-2';
-            div.innerHTML = `<b>${c.Username}:</b>
-                             <p>${c.NoiDungCom}</p>
-                             <span>Đánh giá: ${'⭐'.repeat(c.Vote)}</span>`;
-            list.appendChild(div);
-          });
-        } else {
-          list.innerHTML = '<p>Chưa có bình luận nào cho tour này.</p>';
-        }
+fetch('/webdulich/api/comments/byTour?id=' + id)
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      const list = document.getElementById('comment-list');
+      list.innerHTML = '';
+      if (data.data.length > 0) {
+        data.data.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'comment-item border-bottom py-2';
+          div.innerHTML = `<b>${c.Username}:</b>
+                           <p>${c.NoiDungCom}</p>
+                           <span>Đánh giá: ${'⭐'.repeat(c.Vote)}</span>`;
+          list.appendChild(div);
+        });
+      } else {
+        list.innerHTML = '<p>Chưa có bình luận nào cho tour này.</p>';
       }
-    });
+    }
+  });
 }
 
 // Submit comment

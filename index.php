@@ -106,5 +106,7 @@ $router->get('/api/comments/byTour', 'CommentApiController@listByTour');
 $router->post('/api/comments/add', 'CommentApiController@add');
 $router->post('/api/comments/delete', 'CommentApiController@deleteAdmin');
 $router->post('/api/comments/approve', 'CommentApiController@approveAdmin');
+$router->get('/api/comments/allByTour', 'CommentApiController@listAllByTour');
+
 
 $router->run();

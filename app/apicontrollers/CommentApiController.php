@@ -2,66 +2,86 @@
 require_once __DIR__ . "/../services/CommentService.php";
 
 class CommentApiController {
-    private $service;
+    private $commentService;
 
     public function __construct() {
-        $this->service = new CommentService();
+        $this->commentService = new CommentService();
     }
 
+    // GET /api/comments
     public function listAll() {
-        $comments = $this->service->getAllComments();
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['status'=>'success','data'=>$comments], JSON_UNESCAPED_UNICODE);
+        $comments = $this->commentService->getAllComments();
+        $data = [];
+        while ($row = $comments->fetch_assoc()) {
+            $data[] = $row;
+        }
+        $this->jsonResponse('success', $data);
     }
 
+    // GET /api/comments/byTour?id=...
     public function listByTour() {
-        $maTour = $_GET['id'] ?? ($_GET['maTour'] ?? null);
+        $maTour = $_GET['id'] ?? null;
         if (!$maTour) {
-            echo json_encode(['status'=>'error','message'=>'Thiếu mã tour'], JSON_UNESCAPED_UNICODE);
+            $this->jsonResponse('error', null, 'Thiếu mã tour');
             return;
         }
-        $comments = $this->service->getCommentsByTour($maTour);
-        echo json_encode(['status'=>'success','data'=>$comments], JSON_UNESCAPED_UNICODE);
+        $comments = $this->commentService->getCommentsByTour($maTour);
+        $this->jsonResponse('success', $comments);
     }
 
-    public function add() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $maTVien = $_SESSION['user']['MaTVien'] ?? null;
-                $maTour  = $_POST['maTour'] ?? null;
-                $noiDungCom = $_POST['noiDungCom'] ?? '';
-                $vote = (int)($_POST['vote'] ?? 5);
-
-                $this->service->addComment($maTVien, $maTour, $noiDungCom, $vote);
-
-                echo json_encode(['status'=>'success','message'=>'Bình luận đã gửi, cần admin phê duyệt trước khi hiển thị.'], JSON_UNESCAPED_UNICODE);
-            } catch (Exception $e) {
-                echo json_encode(['status'=>'error','message'=>$e->getMessage()], JSON_UNESCAPED_UNICODE);
-            }
+    // GET /api/comments/allByTour?id=... (cho admin)
+    public function listAllByTour() {
+        $maTour = $_GET['id'] ?? null;
+        if (!$maTour) {
+            $this->jsonResponse('error', null, 'Thiếu mã tour');
+            return;
         }
+        $comments = $this->commentService->getAllCommentsByTour($maTour);
+        $this->jsonResponse('success', $comments);
+    }
+
+    // POST /api/comments/add
+    public function add() {
+        $maTVien = $_SESSION['user']['MaTVien'] ?? null;
+        if (!$maTVien) {
+            $this->jsonResponse('error', null, 'Bạn cần đăng nhập để bình luận!');
+            return;
+        }
+
+        $maTour = $_POST['maTour'] ?? null;
+        $noiDungCom = $_POST['noiDungCom'] ?? '';
+        $vote = (int)($_POST['vote'] ?? 5);
+
+        $result = $this->commentService->addComment($maTVien, $maTour, $noiDungCom, $vote);
+        $this->jsonResponse($result['status'], null, $result['message']);
     }
 
     public function deleteAdmin() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $maCom = $_POST['maCom'] ?? null;
-            if (!$maCom) {
-                echo json_encode(['status'=>'error','message'=>'Thiếu mã comment'], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-            $this->service->deleteComment($maCom);
-            echo json_encode(['status'=>'success','message'=>'Xóa bình luận thành công!'], JSON_UNESCAPED_UNICODE);
+        $maCom = $_POST['maCom'] ?? null;
+        if (!$maCom) {
+            $this->jsonResponse('error', null, 'Thiếu mã comment');
+            return;
         }
+        $this->commentService->deleteComment($maCom);
+        $this->jsonResponse('success', null, 'Xóa bình luận thành công!');
     }
 
     public function approveAdmin() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $maCom = $_POST['maCom'] ?? null;
-            if (!$maCom) {
-                echo json_encode(['status'=>'error','message'=>'Thiếu mã comment'], JSON_UNESCAPED_UNICODE);
-                return;
-            }
-            $this->service->approveComment($maCom);
-            echo json_encode(['status'=>'success','message'=>'Bình luận đã được duyệt!'], JSON_UNESCAPED_UNICODE);
+        $maCom = $_POST['maCom'] ?? null;
+        if (!$maCom) {
+            $this->jsonResponse('error', null, 'Thiếu mã comment');
+            return;
         }
+        $this->commentService->approveComment($maCom);
+        $this->jsonResponse('success', null, 'Bình luận đã được duyệt!');
+    }
+
+    private function jsonResponse($status, $data = null, $message = null) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status' => $status,
+            'data' => $data,
+            'message' => $message
+        ], JSON_UNESCAPED_UNICODE);
     }
 }
