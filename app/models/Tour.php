@@ -9,20 +9,18 @@ class Tour
         $result = $conn->query("SELECT * FROM tour");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
-<<<<<<< HEAD
-    public static function search($keyword)
-    {
-        $conn = Database::getConnection();
-        $stmt = $conn->prepare("SELECT * FROM tour WHERE TenTour LIKE ?");
-        $kw = "%$keyword%";
-        $stmt->bind_param("s", $kw);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-    public static function getById($id)
-    {
-=======
+//     public static function search($keyword)
+//     {
+//         $conn = Database::getConnection();
+//         $stmt = $conn->prepare("SELECT * FROM tour WHERE TenTour LIKE ?");
+//         $kw = "%$keyword%";
+//         $stmt->bind_param("s", $kw);
+//         $stmt->execute();
+//         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+//     }
+//     public static function getById($id)
+//     {
+// =======
    public static function search($keyword) {
     $conn = Database::getConnection();
     // ép về lower-case và dùng collation để bỏ dấu
@@ -35,7 +33,6 @@ class Tour
 
 
     public static function getById($id) {
->>>>>>> d11d57327ad40be3746f8ed1cd7bffba2061013b
         $conn = Database::getConnection();
         $stmt = $conn->prepare("SELECT * FROM tour WHERE MaTour = ?");
         $stmt->bind_param("i", $id);

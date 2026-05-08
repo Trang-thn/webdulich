@@ -16,7 +16,7 @@
     <div class="search-bar">
         <input type="text" id="keyword" class="form-control" placeholder="Tìm theo Mã đặt, Tên khách, Tên tour">
         <button onclick="loadBookings()" class="btn btn-primary">🔍 Tìm kiếm</button>
-        <button id="exportExcel" class="btn btn-success">📊 Xuất Excel</button>
+        <a href="/webdulich/booking/export" class="btn btn-success">📊 Xuất Excel</a>
         <button onclick="resetSearch()" class="btn btn-secondary">🔄 Làm mới</button>
     </div>
     <div class="manage-container">
