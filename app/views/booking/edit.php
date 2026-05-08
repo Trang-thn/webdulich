@@ -6,119 +6,96 @@
     <title>Sửa đơn đặt tour</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .edit-booking {
-            max-width: 700px;
-            margin: 60px auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
-        }
-
-        .edit-booking h2 {
-            text-align: center;
-            margin-bottom: 35px;
-            letter-spacing: 1px;
-            color: #1c1c1c;
-        }
-
-        .edit-booking h2 span {
-            color: #bfa25a;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #333;
-        }
-        .form-control,
-        .form-select,
-        textarea {
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid #ddd;
-            background: #fafafa;
-            transition: 0.3s;
-        }
-
-        .form-control:focus,
-        .form-select:focus,
-        textarea:focus {
-            border-color: #bfa25a;
-            box-shadow: 0 0 8px rgba(191, 162, 90, 0.4);
-            background: #fff;
-        }
-        .btn-primary {
-            background: #bfa25a;
-            border: none;
-            padding: 10px 26px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .btn-secondary {
-            padding: 10px 26px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            transition: 0.3s;
-        }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="/webdulich/public/css/edit.css">
 </head>
 
 <body>
 
     <div class="container edit-booking">
-        <h2> Sửa đơn đặt tour <span>#<?= $booking['MaDat'] ?></span></h2>
-
-        <form method="POST" action="/webdulich/booking/update">
-            <input type="hidden" name="maDat" value="<?= $booking['MaDat'] ?>">
-            <input type="hidden" name="tour_id" value="<?= $booking['MaTour'] ?>">
-
+        <h2>✏️ Sửa đơn đặt tour <span id="booking-id"></span></h2>
+        <form id="edit-form">
+            <input type="hidden" name="maDat">
             <div class="mb-3">
                 <label class="form-label">Số lượng khách</label>
-                <input type="number" name="soLuongKhach" class="form-control"
-                    value="<?= $booking['SoLuongKhach'] ?>" required>
+                <input type="number" name="soLuongKhach" class="form-control" required>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Ngày đi</label>
-                <input type="date" name="ngayDi" min="<?= date('Y-m-d') ?>" class="form-control"
-                    value="<?= $booking['NgayDi'] ? date('Y-m-d', strtotime($booking['NgayDi'])) : '' ?>" required>
-
+                <input type="date" name="ngayDi" class="form-control" required>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Cấp khách sạn</label>
                 <select name="capKS" class="form-select">
-                    <option <?= $booking['CapKS'] == '3 sao' ? 'selected' : '' ?>>3 sao</option>
-                    <option <?= $booking['CapKS'] == '4 sao' ? 'selected' : '' ?>>4 sao</option>
-                    <option <?= $booking['CapKS'] == '5 sao' ? 'selected' : '' ?>>5 sao</option>
+                    <option value="3*">3 sao</option>
+                    <option value="4*">4 sao</option>
+                    <option value="5*">5 sao</option>
                 </select>
+
+
             </div>
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label">Yêu cầu khác</label>
-                <textarea name="khac" class="form-control" rows="3"><?= htmlspecialchars($booking['Khac']) ?></textarea>
+                <textarea name="khac" class="form-control"></textarea>
             </div>
-
-            <div class="d-flex gap-3">
-                <input type="hidden" name="source" value="edit">
-                <button type="submit" class="btn btn-primary"> Lưu thay đổi</button>
-                <a href="/webdulich/booking/manage" class="btn btn-secondary">⬅ Quay lại</a>
-            </div>
+            <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
+            <a href="/webdulich/booking/manage" class="btn btn-secondary">⬅ Quay lại</a>
         </form>
+        <div id="msg"></div>
     </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const maDat = params.get('maDat');
+
+        async function apiRequest(url, options = {}) {
+            const res = await fetch(url, options);
+            return res.json();
+        }
+
+        function fillForm(b) {
+            document.getElementById('booking-id').textContent = '#' + b.MaDat;
+            document.querySelector('[name="maDat"]').value = b.MaDat;
+            document.querySelector('[name="soLuongKhach"]').value = b.SoLuongKhach;
+            document.querySelector('[name="ngayDi"]').value = b.NgayDi.substring(0, 10);
+            document.querySelector('[name="capKS"]').value = b.CapKS;
+            document.querySelector('[name="khac"]').value = b.Khac ?? '';
+        }
+
+        function showToast(type, message) {
+            toastr[type](message);
+        }
+
+        async function loadBooking(maDat) {
+            const data = await apiRequest('/webdulich/api/bookings/detail?maDat=' + maDat);
+            if (data.status === 'success') {
+                fillForm(data.data);
+            } else {
+                document.getElementById('msg').textContent = data.message;
+            }
+        }
+
+        document.getElementById('edit-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            const resp = await apiRequest('/webdulich/api/bookings/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            showToast(resp.status, resp.message);
+        });
+
+        if (maDat) loadBooking(maDat);
+    </script>
 
 </body>
 

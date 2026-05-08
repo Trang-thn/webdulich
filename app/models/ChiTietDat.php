@@ -15,7 +15,7 @@ class ChiTietDat
         $sql = "INSERT INTO chitietdat (MaDat, MaTour, NgayDi, SoLuongKhach, CapKS, Khac)
                 VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("iisiis", $maDat, $maTour, $ngayDi, $soLuongKhach, $capKS, $khac);
+        $stmt->bind_param("iisiss", $maDat, $maTour, $ngayDi, $soLuongKhach, $capKS, $khac);
         return $stmt->execute();
     }
 

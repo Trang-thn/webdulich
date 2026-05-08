@@ -5,55 +5,13 @@
     <meta charset="UTF-8">
     <title>Lịch sử đặt tour</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-         
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .history-container {
-            max-width: 1200px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-
-        table {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #bfa25a, #8e6f3e);
-            color: #fff;
-        }
-
-        tbody tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .badge {
-            font-size: 0.9rem;
-            padding: 6px 12px;
-            border-radius: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="/webdulich/public/css/history.css">
 </head>
 
 <body>
     <div class="history-container">
-        <h2> Lịch sử đặt tour</h2>
-        <table class="table table-bordered table-striped align-middle">
+        <h2>Lịch sử đặt tour</h2>
+        <table class="table table-bordered table-striped align-middle" id="history-table" style="display:none;">
             <thead>
                 <tr>
                     <th>Mã đặt</th>
@@ -67,35 +25,42 @@
                     <th>Trạng thái</th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($bookings as $b): ?>
-                    <tr>
-                        <td><?= $b['MaDat'] ?></td>
-                        <td><?= htmlspecialchars($b['HoTen']) ?></td>
-                        <td><?= htmlspecialchars($b['EmailTVien']) ?></td>
-                        <td><?= htmlspecialchars($b['TenTour']) ?></td>
-                        <td><?= !empty($b['NgayDat']) ? date('d/m/Y', strtotime($b['NgayDat'])) : '-' ?></td>
-                        <td><?= !empty($b['NgayDi']) ? date('d/m/Y', strtotime($b['NgayDi'])) : '-' ?></td>
-                        <td><?= !empty($b['SoLuongKhach']) ? $b['SoLuongKhach'] : '-' ?></td>
-                        <td><?= !empty($b['CapKS']) ? $b['CapKS'] : '-' ?></td>
-                        <td>
-                            <?php if (!empty($b['NgayDi'])): ?>
-                                <span class="badge bg-success">Đã đặt</span>
-                            <?php else: ?>
-                                <span class="badge bg-danger">Đã hủy</span>
-                                <form action="/webdulich/booking/delete" method="POST" style="display:inline;">
-                                    <input type="hidden" name="maDat" value="<?= $b['MaDat'] ?>">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Xóa</button>
-                                </form>
-                            <?php endif; ?>
-                        </td>
-
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+            <tbody id="booking-body"></tbody>
         </table>
+        <p id="no-booking" style="text-align:center; color:#7f8c8d; display:none;">Không có đơn đặt tour nào.</p>
     </div>
 
+    <script>
+        async function loadBookings() {
+            const res = await fetch('/webdulich/api/bookings/admin');
+            const json = await res.json();
+            const tbody = document.getElementById('booking-body');
+            tbody.innerHTML = '';
+
+            if (json.status === 'success' && json.data.length > 0) {
+                document.getElementById('history-table').style.display = 'table';
+                json.data.forEach(b => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${b.MaDat}</td>
+                <td>${b.HoTen}</td>
+                <td>${b.EmailTVien}</td>
+                <td>${b.TenTour}</td>
+                <td>${b.NgayDat ? new Date(b.NgayDat).toLocaleDateString() : '-'}</td>
+                <td>${b.NgayDi ? new Date(b.NgayDi).toLocaleDateString() : '-'}</td>
+                <td>${b.SoLuongKhach ?? '-'}</td>
+                <td>${b.CapKS ?? '-'}</td>
+                <td>${b.NgayDi ? '<span class="badge bg-success">Đã đặt</span>' : '<span class="badge bg-danger">Đã hủy</span>'}</td>
+            `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                document.getElementById('no-booking').style.display = 'block';
+            }
+        }
+
+        loadBookings();
+    </script>
 </body>
 
 </html>

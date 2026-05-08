@@ -1,0 +1,39 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.history-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background: linear-gradient(135deg, #bfa25a, #8e6f3e);
+    color: #fff;
+}
+
+tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+}

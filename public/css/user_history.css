@@ -1,0 +1,80 @@
+.history-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.history-container h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    border-radius: 8px !important;
+}
+
+.history-table thead {
+    background: #f5e78f;
+    color: #191818;
+}
+
+.history-scroll {
+    max-height: 420px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.history-scroll::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.history-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.history-table tbody tr:hover {
+    background: #ecf0f1;
+    cursor: pointer;
+}
+
+.update {
+    background: #74c692 !important;
+}
+
+.cancel {
+    background: #e74c3c !important;
+}
+
+.btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 0 3px;
+    color: #090808;
+}
+
+.auth-background {
+    min-height: 100vh;
+    background: url('/webdulich/public/images/images/dalat_3.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 0;
+}

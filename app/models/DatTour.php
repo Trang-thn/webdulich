@@ -64,7 +64,7 @@ class DatTour
 
     public function getBookingById($maDat)
     {
-        $sql = "SELECT d.MaDat, d.NgayDat, tv.HoTen, tv.EmailTVien, tv.SoDT, tv.DiaChi,
+        $sql = "SELECT d.MaDat, d.NgayDat, d.MaTVien, tv.HoTen, tv.EmailTVien, tv.SoDT, tv.DiaChi,
                        ct.NgayDi, ct.SoLuongKhach, ct.CapKS, ct.Khac,
                        t.MaTour, t.TenTour, t.GiaTour, t.DiemKhoiHanh, t.NoiDungTour
                 FROM dattour d
@@ -99,5 +99,21 @@ class DatTour
         }
 
         return $bookings;
+    }
+    public function findByUserTourDate($maTVien, $tourId, $ngayDi)
+    {
+        $sql = "SELECT dt.MaDat
+            FROM dattour dt
+            JOIN chitietdat ct ON dt.MaDat = ct.MaDat
+            WHERE dt.MaTVien = ? 
+              AND ct.MaTour = ? 
+              AND ct.NgayDi = ?
+            LIMIT 1";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("iis", $maTVien, $tourId, $ngayDi);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc(); 
     }
 }

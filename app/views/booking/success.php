@@ -1,148 +1,151 @@
 <?php
 $maDat = $_GET['maDat'] ?? null;
-$tourId = $_GET['tour_id'] ?? null;
-
-if (!$maDat || !$tourId) {
-    echo "<div class='alert alert-danger'>Thiếu tham số!</div>";
+if (!$maDat) {
+    echo "<div class='alert alert-danger'>Thiếu mã đặt!</div>";
     return;
 }
-
-// Gọi API booking detail
-$bookingJson = file_get_contents("http://localhost/webdulich/api/bookings/$maDat");
-$bookingData = json_decode($bookingJson, true);
-
-if (!$bookingData || $bookingData['status'] !== 'success') {
-    echo "<div class='alert alert-danger'>Không tìm thấy đơn đặt!</div>";
-    return;
-}
-$booking = $bookingData['data'];
-$soLuongKhach = $booking['SoLuongKhach'];
-$ngayDi = $booking['NgayDi'];
-$capKS = $booking['CapKS'];
-$khac = $booking['Khac'];
-
-// Gọi API tour detail
-$tourJson = file_get_contents("http://localhost/webdulich/api/tours/$tourId");
-$tourData = json_decode($tourJson, true);
-$tour = $tourData['data'] ?? null;
-
-if (!$tour) {
-    echo "<div class='alert alert-danger'>Không tìm thấy tour!</div>";
-    return;
-}
-
-$images = explode(",", $tour['AnhTour']);
-$images = array_map('trim', $images);
 ?>
 <?php include __DIR__ . "/../home/home_menu.php"; ?>
-
-<div class="background-slideshow" data-images='<?= json_encode($images) ?>'></div>
-
+<div class="background-slideshow"></div>
 <div class="booking-success">
     <div class="alert luxury-alert">
-        <h4>🎉 Đặt tour thành công!</h4>
-        <p>Bạn đã đặt tour: <strong><?= htmlspecialchars($tour['TenTour']) ?></strong></p>
+        <h4>🎉 Đơn đặt tour</h4>
+        <p>Mã đơn: <strong id="booking-id"></strong></p>
+        <p id="tour-name"></p>
     </div>
-
-    <!-- Form cập nhật -->
+    <div id="msg"></div>
     <form id="update-form">
-        <input type="hidden" name="maDat" value="<?= $maDat ?>">
-        <input type="hidden" name="tourId" value="<?= $tour['MaTour'] ?>">
-
+        <input type="hidden" name="maDat">
         <div class="mb-3">
             <label>Số lượng khách</label>
-            <input type="number" name="soLuongKhach" value="<?= $soLuongKhach ?>" class="form-control" min="1" required>
+            <input type="number" name="soLuongKhach" class="form-control" min="1" required>
         </div>
-
         <div class="mb-3">
             <label>Ngày đi</label>
-            <input type="date" name="ngayDi" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d', strtotime($ngayDi)) ?>" class="form-control" required>
+            <input type="date" name="ngayDi" min="<?= date('Y-m-d') ?>" class="form-control" required>
         </div>
-
         <div class="mb-3">
             <label>Cấp khách sạn</label>
             <select name="capKS" class="form-select">
-                <option value="3*" <?= $capKS == "3*" ? "selected" : "" ?>>3 sao</option>
-                <option value="4*" <?= $capKS == "4*" ? "selected" : "" ?>>4 sao</option>
-                <option value="5*" <?= $capKS == "5*" ? "selected" : "" ?>>5 sao (Luxury)</option>
+                <option value="3*">3 sao</option>
+                <option value="4*">4 sao</option>
+                <option value="5*">5 sao (Luxury)</option>
             </select>
         </div>
-
         <div class="mb-3">
             <label>Yêu cầu khác</label>
-            <textarea name="khac" class="form-control" rows="3"><?= htmlspecialchars($khac) ?></textarea>
+            <textarea name="khac" class="form-control" rows="3"></textarea>
         </div>
-
         <div class="booking-actions">
             <button type="submit" class="btn luxury-btn-warning">💾 Lưu thay đổi</button>
         </div>
     </form>
-
-    <!-- Form hủy -->
     <div class="booking-actions">
         <form id="cancel-form">
-            <input type="hidden" name="maDat" value="<?= $maDat ?>">
+            <input type="hidden" name="maDat">
             <button type="submit" class="btn luxury-btn-danger">❌ Hủy tour</button>
         </form>
         <a href="/webdulich/" class="btn luxury-btn-secondary">⬅️ Thoát</a>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+<script src="/webdulich/public/js/api.js"></script>
 <script>
-document.getElementById('update-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-
-    fetch('/webdulich/api/bookings/' + data.maDat, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(resp => {
-        if (resp.status === 'success') {
-            toastr.success(resp.message);
-        } else {
-            toastr.error(resp.message);
-        }
-    });
-});
-
-document.getElementById('cancel-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const maDat = this.querySelector('[name=maDat]').value;
-    if (!confirm("Bạn có chắc chắn muốn hủy tour này không?")) return;
-
-    fetch('/webdulich/api/bookings/' + maDat, { method: 'DELETE' })
-    .then(res => res.json())
-    .then(resp => {
-        if (resp.status === 'success') {
-            toastr.success(resp.message);
-            setTimeout(() => window.location.href = '/webdulich/', 1500);
-        } else {
-            toastr.error(resp.message);
-        }
-    });
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const slideshow = document.querySelector(".background-slideshow");
-    const images = JSON.parse(slideshow.dataset.images);
-    let index = 0;
-    function changeBackground() {
-        slideshow.style.backgroundImage = `url('/webdulich/public/images/images/${images[index]}')`;
-        index = (index + 1) % images.length;
+    const params = new URLSearchParams(window.location.search);
+    const maDat = params.get('maDat');
+    async function apiRequest(url, options = {}) {
+        const res = await fetch(url, options);
+        return res.json();
     }
-    changeBackground();
-    setInterval(changeBackground, 5000);
-});
-</script>
 
+    function showToast(type, message) {
+        toastr[type](message);
+    }
+
+    function fillForm(b, tour) {
+        document.getElementById('booking-id').textContent = '#' + b.MaDat;
+        document.getElementById('tour-name').innerHTML = `Tour: <strong>${tour.TenTour}</strong>`;
+        document.querySelector('#update-form [name="maDat"]').value = b.MaDat;
+        document.querySelector('#cancel-form [name="maDat"]').value = b.MaDat;
+        document.querySelector('[name="soLuongKhach"]').value = b.SoLuongKhach;
+        document.querySelector('[name="ngayDi"]').value = b.NgayDi.substring(0, 10);
+        document.querySelector('[name="capKS"]').value = b.CapKS;
+        document.querySelector('[name="khac"]').value = b.Khac ?? '';
+        if (tour.AnhTour) {
+            const images = tour.AnhTour.split(',').map(i => i.trim());
+            const slideshow = document.querySelector('.background-slideshow');
+            let i = 0;
+
+            function changeBg() {
+                slideshow.style.backgroundImage = `url('/webdulich/public/images/images/${images[i]}')`;
+                i = (i + 1) % images.length;
+            }
+            changeBg();
+            setInterval(changeBg, 5000);
+        }
+    }
+    async function loadBooking(maDat) {
+        try {
+            const bookingData = await apiRequest('/webdulich/api/bookings/detail?maDat=' + maDat);
+            if (bookingData.status !== 'success') {
+                document.getElementById('msg').innerHTML = `<div class="alert alert-danger">${bookingData.message}</div>`;
+                return;
+            }
+            const booking = bookingData.data;
+            const tourData = await apiRequest('/webdulich/api/tours/detail?id=' + booking.MaTour);
+            if (tourData.status !== 'success') {
+                document.getElementById('msg').innerHTML = `<div class="alert alert-danger">Không tìm thấy tour</div>`;
+                return;
+            }
+            fillForm(booking, tourData.data);
+        } catch (err) {
+            document.getElementById('msg').innerHTML = `<div class="alert alert-danger">Lỗi API: ${err.message}</div>`;
+        }
+    }
+    document.getElementById('update-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        try {
+            const resp = await apiRequest('/webdulich/api/bookings/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            showToast(resp.status, resp.message);
+        } catch (err) {
+            showToast('error', 'Lỗi kết nối API: ' + err.message);
+        }
+    });
+    document.getElementById('cancel-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!confirm("Bạn có chắc muốn hủy tour?")) return;
+        const maDat = e.target.querySelector('[name=maDat]').value;
+        try {
+            const resp = await apiRequest('/webdulich/api/bookings/cancel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    maDat
+                })
+            });
+            if (resp.status === 'success') {
+                showToast('success', resp.message);
+                setTimeout(() => {
+                    location.href = '/webdulich/';
+                }, 1500);
+            } else {
+                showToast('error', resp.message);
+            }
+        } catch (err) {
+            showToast('error', 'Lỗi API: ' + err.message);
+        }
+    });
+    loadBooking(maDat);
+</script>
 <?php include __DIR__ . "/../home/home_footer.php"; ?>

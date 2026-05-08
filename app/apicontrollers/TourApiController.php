@@ -1,53 +1,71 @@
 <?php
-require_once __DIR__ . "/../models/Tour.php";
-require_once __DIR__ . "/../models/Comment.php";
+require_once __DIR__ . "/../services/TourService.php";
 
-class TourApiController
-{
-    // ✅ Lấy danh sách tour
-    public function list()
-    {
-        $tours = Tour::getAll();
+class TourApiController {
+    private $tourService;
+
+    public function __construct() {
+        $this->tourService = new TourService();
+    }
+
+    public function list() {
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['status' => 'success', 'data' => $tours], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['status'=>'success','data'=>$this->tourService->getAllTours()], JSON_UNESCAPED_UNICODE);
     }
 
-    // ✅ Chi tiết tour + comment
-    public function detail()
-{
-    if (!isset($_GET['id'])) {
-        echo json_encode(['status' => 'error', 'message' => 'Thiếu mã tour'], JSON_UNESCAPED_UNICODE);
-        return;
+    public function search() {
+        header('Content-Type: application/json; charset=utf-8');
+        $keyword = $_GET['keyword'] ?? '';
+        echo json_encode(['status'=>'success','data'=>$this->tourService->searchTours($keyword)], JSON_UNESCAPED_UNICODE);
     }
 
-    $id = intval($_GET['id']);
-    $tour = Tour::getById($id);
+    public function detail() {
+        $id = $_GET['id'] ?? null;
 
-    if (!$tour) {
-        echo json_encode(['status' => 'error', 'message' => 'Tour không tồn tại'], JSON_UNESCAPED_UNICODE);
-        return;
+        if (!$id) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu tham số id'
+            ]);
+            return;
+        }
+
+        $tour = Tour::getById(intval($id));
+
+        if ($tour) {
+            echo json_encode([
+                'status' => 'success',
+                'data' => $tour
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy tour'
+            ]);
+        }
     }
 
-    $commentModel = new Comment();
-    $comments = $commentModel->getByTour($tour['MaTour']); // đã là mảng
 
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
-        'status' => 'success',
-        'data' => [
-            'tour' => $tour,
-            'comments' => $comments
-        ]
-    ], JSON_UNESCAPED_UNICODE);
+   public function add() {
+    try {
+        $ok = $this->tourService->createTour($_POST, $_FILES);
+        echo json_encode(['status'=>$ok?'success':'error','message'=>$ok?'Thêm tour thành công!':'Không thể thêm tour']);
+    } catch (Exception $e) {
+        echo json_encode(['status'=>'error','message'=>$e->getMessage()]);
+    }
 }
 
 
-
-    // ✅ Quản lý tour (dành cho admin)
-    public function manage()
-    {
-        $tours = Tour::getAll();
+    public function edit() {
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['status' => 'success', 'data' => $tours], JSON_UNESCAPED_UNICODE);
+        $ok = $this->tourService->updateTour($_POST, $_FILES);
+        echo json_encode(['status'=>$ok?'success':'error','message'=>$ok?'Cập nhật tour thành công!':'Không thể cập nhật tour'], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function delete() {
+        header('Content-Type: application/json; charset=utf-8');
+        $id = $_POST['id'] ?? null;
+        $ok = $id ? $this->tourService->deleteTour($id) : false;
+        echo json_encode(['status'=>$ok?'success':'error','message'=>$ok?'Xóa tour thành công!':'Không thể xóa tour'], JSON_UNESCAPED_UNICODE);
     }
 }

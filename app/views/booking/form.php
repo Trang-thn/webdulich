@@ -4,8 +4,7 @@ if (!isset($tour) || !$tour) {
     return;
 }
 $tourId = $_GET['tour_id'] ?? null;
-$images = explode(",", $tour['AnhTour']);
-$images = array_map('trim', $images);
+$images = array_map('trim', explode(",", $tour['AnhTour']));
 ?>
 <?php include __DIR__ . "/../home/home_menu.php"; ?>
 
@@ -17,34 +16,28 @@ $images = array_map('trim', $images);
 
     <form id="booking-form">
         <input type="hidden" name="tour_id" value="<?= htmlspecialchars($tourId) ?>">
-
         <div class="luxury-group">
             <label>Số lượng khách</label>
             <input type="number" name="soLuongKhach" min="1" required>
         </div>
-
         <div class="luxury-group">
             <label>Ngày khởi hành</label>
             <input type="date" name="ngayDi" min="<?= date('Y-m-d') ?>" required>
         </div>
-
         <div class="luxury-group">
             <label>Cấp khách sạn</label>
             <select name="capKS">
-                <option value="3 sao">3 sao</option>
-                <option value="4 sao">4 sao</option>
-                <option value="5 sao">5 sao (Luxury)</option>
+                <option value="3*">3 sao</option>
+                <option value="4*">4 sao</option>
+                <option value="5*">5 sao (Luxury)</option>
             </select>
         </div>
-
         <div class="luxury-group">
             <label>Yêu cầu đặc biệt</label>
             <textarea name="khac" rows="4" placeholder="Ăn chay, phòng VIP, xe riêng..."></textarea>
         </div>
-
         <button type="submit" class="luxury-btn">Xác nhận đặt tour</button>
     </form>
-
     <div id="booking-msg" class="mt-3 text-center"></div>
 </div>
 
@@ -53,53 +46,58 @@ $images = array_map('trim', $images);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
-document.getElementById("booking-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-    const msg = document.getElementById("booking-msg");
-    msg.textContent = "Đang xử lý...";
-    msg.style.color = "blue";
+    async function apiRequest(url, options = {}) {
+        const res = await fetch(url, options);
+        return res.json();
+    }
 
-    try {
-        const res = await fetch("/webdulich/api/bookings/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        const json = await res.json();
-        if (json.status === "success") {
-            toastr.success(json.message || "Đặt tour thành công!");
-            msg.textContent = json.message;
-            msg.style.color = "green";
-            if (json.maDat) {
-                setTimeout(() => window.location.href = "/webdulich/booking/success?maDat=" + json.maDat, 1500);
+    function showToast(type, message) {
+        toastr[type](message);
+    }
+
+    document.getElementById("booking-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(this).entries());
+
+        try {
+            const json = await apiRequest("/webdulich/api/bookings/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+            if (json.status === "success") {
+                showToast("success", json.message || "Đặt tour thành công!");
+                if (json.maDat) {
+                    setTimeout(() => {
+                        window.location.href = `/webdulich/booking/success?maDat=${json.maDat}&tour_id=${data.tour_id}`;
+                    }, 1500);
+                }
+            } else {
+                showToast("error", json.message || "Đặt tour thất bại!");
             }
-        } else {
-            toastr.error(json.message || "Đặt tour thất bại!");
-            msg.textContent = json.message;
-            msg.style.color = "red";
+        } catch (err) {
+            showToast("error", "Lỗi kết nối API: " + err.message);
         }
-    } catch (err) {
-        toastr.error("Lỗi kết nối API: " + err.message);
-        msg.textContent = "Lỗi kết nối API: " + err.message;
-        msg.style.color = "red";
-    }
-});
-</script>
+    });
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const slideshow = document.querySelector(".background-slideshow");
-    const images = JSON.parse(slideshow.dataset.images);
-    let index = 0;
-    function changeBackground() {
-        slideshow.style.backgroundImage = `url('/webdulich/public/images/images/${images[index]}')`;
-        index = (index + 1) % images.length;
+    function initSlideshow(images) {
+        const slideshow = document.querySelector(".background-slideshow");
+        let index = 0;
+
+        function changeBackground() {
+            slideshow.style.backgroundImage = `url('/webdulich/public/images/images/${images[index]}')`;
+            index = (index + 1) % images.length;
+        }
+        changeBackground();
+        setInterval(changeBackground, 4000);
     }
-    changeBackground();
-    setInterval(changeBackground, 4000);
-});
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const images = JSON.parse(document.querySelector(".background-slideshow").dataset.images);
+        initSlideshow(images);
+    });
 </script>
 
 <?php include __DIR__ . "/../home/home_footer.php"; ?>

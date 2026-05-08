@@ -1,100 +1,182 @@
-<?php
-require_once __DIR__ . "/../../../config/database.php";
-$conn = Database::getConnection();
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sửa Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-$required = ['MaTour','TenTour','GiaTour','TGTour','DiemKhoiHanh','NgayKhoiHanh'];
-foreach ($required as $f) {
-    if (!isset($_POST[$f])) {
-        header("Location: /webdulich/tour/manage?status=error");
-        exit;
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; }
+    .edit-tour {
+      max-width: 700px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
     }
-}
-
-$MaTour       = intval($_POST['MaTour']);
-$TenTour      = mysqli_real_escape_string($conn, $_POST['TenTour']);
-$GiaTour      = intval($_POST['GiaTour']);
-$TGTour       = mysqli_real_escape_string($conn, $_POST['TGTour']);
-$DiemKhoiHanh = mysqli_real_escape_string($conn, $_POST['DiemKhoiHanh']);
-$NgayKhoiHanh = mysqli_real_escape_string($conn, $_POST['NgayKhoiHanh']);
-$NoiDungTour  = mysqli_real_escape_string($conn, $_POST['NoiDungTour'] ?? "");
-
-if (strpos($NgayKhoiHanh, 'T') !== false) {
-    $NgayKhoiHanh = str_replace('T', ' ', $NgayKhoiHanh) . ':00';
-}
-
-$oldImages = '';
-$res = mysqli_query($conn, "SELECT AnhTour FROM tour WHERE MaTour = {$MaTour} LIMIT 1");
-if ($res && mysqli_num_rows($res) === 1) {
-    $row = mysqli_fetch_assoc($res);
-    $oldImages = $row['AnhTour'];
-}
-$oldImagesArray = !empty($oldImages) ? explode(",", $oldImages) : [];
-
-$keepImages = isset($_POST['keepImages']) ? array_map('trim', $_POST['keepImages']) : [];
-
-$newImages = [];
-$maxFiles  = 10;
-$maxSize   = 5 * 1024 * 1024;
-$allowedExt = ['jpg','jpeg','png','gif','webp'];
-
-if (!empty($_FILES['AnhTour']['name'][0])) {
-    $target_dir = __DIR__ . "/../../../public/images/images/";
-    if (!is_dir($target_dir)) {
-        @mkdir($target_dir, 0755, true);
+    .edit-tour h2 {
+      text-align: center;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
+      color: #1c1c1c;
     }
-
-    $count = count($_FILES['AnhTour']['name']);
-    if ($count > $maxFiles) {
-        $count = $maxFiles;
+    .edit-tour h2 span { color: #bfa25a; }
+    .form-label { font-weight: 600; color: #333; }
+    .form-control {
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      transition: 0.3s;
     }
-
-    for ($key = 0; $key < $count; $key++) {
-        $name = $_FILES['AnhTour']['name'][$key] ?? '';
-        if (empty($name)) continue;
-        if ($_FILES['AnhTour']['error'][$key] !== UPLOAD_ERR_OK) continue;
-        if ($_FILES['AnhTour']['size'][$key] > $maxSize) continue;
-
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowedExt)) continue;
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime  = finfo_file($finfo, $_FILES['AnhTour']['tmp_name'][$key]);
-        finfo_close($finfo);
-        if (strpos($mime, 'image/') !== 0) continue;
-
-        $safeName   = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', basename($name));
-        $fileName   = time() . "_" . bin2hex(random_bytes(4)) . "_" . $safeName;
-        $targetFile = $target_dir . $fileName;
-
-        if (move_uploaded_file($_FILES['AnhTour']['tmp_name'][$key], $targetFile)) {
-            $newImages[] = $fileName;
-        }
+    .form-control:focus {
+      border-color: #bfa25a;
+      box-shadow: 0 0 8px rgba(191, 162, 90, 0.4);
+      background: #fff;
     }
-}
+    .btn-primary {
+      background: linear-gradient(135deg, #bfa25a, #8e6f3e);
+      border: none;
+      padding: 10px 26px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .btn-secondary {
+      padding: 10px 26px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+    }
+    @media (max-width: 576px) {
+      .edit-tour { padding: 25px; }
+    }
+    #msg { text-align:center; margin-top:15px; font-weight:600; }
+    img { margin-top: 10px; border-radius: 4px; max-width: 100%; }
+  </style>
+</head>
+<body>
 
-if (isset($_POST['replaceAll']) && $_POST['replaceAll'] == "1") {
-    $AnhTourString = !empty($newImages) ? implode(",", $newImages) : "";
-} else {
-    $keepImages = array_values(array_intersect($keepImages, $oldImagesArray));
-    $AnhTourString = implode(",", array_merge($keepImages, $newImages));
-}
+<div class="container edit-tour">
+  <h2>✏️ Sửa Tour</h2>
 
-$sql = "UPDATE tour SET 
-            TenTour      = ?, 
-            GiaTour      = ?, 
-            TGTour       = ?, 
-            DiemKhoiHanh = ?,
-            NgayKhoiHanh = ?, 
-            NoiDungTour  = ?, 
-            AnhTour      = ?
-        WHERE MaTour = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sdsssssi", $TenTour, $GiaTour, $TGTour, $DiemKhoiHanh, $NgayKhoiHanh, $NoiDungTour, $AnhTourString, $MaTour);
+  <form id="editTourForm" enctype="multipart/form-data">
+    <input type="hidden" name="MaTour" id="MaTour">
 
-if ($stmt->execute()) {
-    header("Location: /webdulich/tour/manage?status=success");
-    exit;
-} else {
-    header("Location: /webdulich/tour/manage?status=error");
-    exit;
-}
+    <div class="mb-3">
+      <label class="form-label">Tên tour</label>
+      <input type="text" id="TenTour" name="TenTour" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Giá tour (VND)</label>
+      <input type="number" id="GiaTour" name="GiaTour" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Thời gian tour</label>
+      <input type="text" id="TGTour" name="TGTour" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Điểm khởi hành</label>
+      <input type="text" id="DiemKhoiHanh" name="DiemKhoiHanh" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Ngày khởi hành</label>
+      <input type="datetime-local" id="NgayKhoiHanh" name="NgayKhoiHanh" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Mô tả tour</label>
+      <textarea id="NoiDungTour" name="NoiDungTour" rows="4" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Ảnh hiện tại</label>
+      <div id="currentImage"></div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Cập nhật ảnh mới</label>
+      <input type="file" id="AnhTour" name="AnhTour[]" multiple accept="image/*" class="form-control">
+    </div>
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-primary">💾 Cập nhật tour</button>
+      <a href="/webdulich/tour/manage" class="btn btn-secondary">⬅️ Quay lại</a>
+    </div>
+  </form>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+// Lấy id từ URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+
+// Nạp dữ liệu tour vào form
+fetch('/webdulich/api/tours/detail?id=' + id)
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success' && data.data) {
+      const tour = data.data;
+      document.getElementById('MaTour').value = tour.MaTour || '';
+      document.getElementById('TenTour').value = tour.TenTour || '';
+      document.getElementById('GiaTour').value = tour.GiaTour || '';
+      document.getElementById('TGTour').value = tour.TGTour || '';
+      document.getElementById('DiemKhoiHanh').value = tour.DiemKhoiHanh || '';
+      document.getElementById('NgayKhoiHanh').value = tour.NgayKhoiHanh
+        ? tour.NgayKhoiHanh.replace(' ', 'T').slice(0,16)
+        : '';
+      document.getElementById('NoiDungTour').value = tour.NoiDungTour || '';
+
+      // Hiển thị ảnh hiện tại
+      const imgs = tour.AnhTour ? tour.AnhTour.split(',') : [];
+      const imgContainer = document.getElementById('currentImage');
+      imgContainer.innerHTML = imgs.map(img =>
+        `<img src="/webdulich/public/images/images/${img}" width="100" style="margin-right:5px;">`
+      ).join('');
+    } else {
+      document.getElementById('msg').textContent = 'Không thể tải dữ liệu tour';
+      document.getElementById('msg').style.color = 'red';
+    }
+  })
+  .catch(err => {
+    document.getElementById('msg').textContent = 'Lỗi khi tải dữ liệu tour: ' + err;
+    document.getElementById('msg').style.color = 'red';
+  });
+
+// Xử lý submit form cập nhật
+document.getElementById('editTourForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  formData.append('MaTour', id);
+
+  fetch('/webdulich/api/tours/edit', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+      const msg = document.getElementById('msg');
+      msg.textContent = data.message;
+      msg.style.color = data.status === 'success' ? 'green' : 'red';
+      if (data.status === 'success') {
+        setTimeout(() => window.location.href = '/webdulich/tour/manage', 1500);
+      }
+    })
+    .catch(err => {
+      const msg = document.getElementById('msg');
+      msg.textContent = 'Lỗi khi cập nhật tour: ' + err;
+      msg.style.color = 'red';
+    });
+});
+</script>
+
+</body>
+</html>

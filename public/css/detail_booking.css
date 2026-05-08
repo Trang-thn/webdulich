@@ -1,0 +1,64 @@
+body {
+
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.booking-detail {
+    max-width: 850px;
+    margin: 60px auto;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+}
+
+.booking-detail h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+    color: #1c1c1c;
+}
+
+.booking-detail h3 span {
+    color: #bfa25a;
+}
+
+.list-group-item {
+    border: none;
+    padding: 14px 0;
+    font-size: 15px;
+    border-bottom: 1px dashed #ddd;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item strong {
+    color: #333;
+    width: 180px;
+    display: inline-block;
+}
+
+.price {
+    color: #bfa25a;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.list-group-item:hover {
+    background: #faf8f2;
+    transition: 0.3s;
+}
+
+@media (max-width: 576px) {
+    .booking-detail {
+        padding: 25px;
+    }
+
+    .list-group-item strong {
+        width: auto;
+        display: block;
+        margin-bottom: 5px;
+    }
+}

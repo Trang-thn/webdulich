@@ -25,17 +25,18 @@
   position: fixed;
   top: 0;
   left: 0;
+  height: 70px;
   width: 100%;
-  z-index: 1000;
+  z-index: 100;
   background: linear-gradient(135deg, #bfa25a, #8e6f3e);
   color: #fff;
-  padding: 15px;
+  padding: 25px 20px;
 }
 
 .navbar h1 {
   margin: 0;
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .logout a {
@@ -76,9 +77,11 @@
 
 .content {
   margin-left: 260px;
-  margin-top: 70px;
   height: calc(100vh - 70px);
-  overflow-y: auto; /* cuộn nội dung ở đây */
+  overflow-y: auto; /* chỉ cuộn phần nội dung */
+  padding: 20px;
+  box-sizing: border-box;
+  background: #fff;
 }
 
 

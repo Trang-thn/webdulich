@@ -168,4 +168,4 @@
 
 </body>
 </html>
-<?php include __DIR__ . "/../home/home_footer.php"; ?>
+
