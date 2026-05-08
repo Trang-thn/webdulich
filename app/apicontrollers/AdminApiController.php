@@ -79,15 +79,15 @@ class AdminApiController {
 
     // ✅ API thông tin người dùng
     public function profile()
-    {
-        $userId = $_GET['id'] ?? null;
-        if ($userId) {
-            $user = $this->userModel->getById($userId);
-            echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
-        }
+{
+    $userId = $_GET['id'] ?? null;
+    if ($userId) {
+        $user = $this->userService->getUserById($userId); // sửa ở đây
+        echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
     }
+}
 
     private function jsonResponse($statusCode, $data) {
         http_response_code($statusCode);

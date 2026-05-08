@@ -10,94 +10,62 @@
 </head>
 
 <body>
-   <!--  phần top-->
+   <!-- phần top -->
    <div class="admin">
-  <?php if (isset($_SESSION['user'])): ?>
-    <div class="dropdown">
-      <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-        <i class='bx bxs-user'></i>
-        <?= htmlspecialchars($_SESSION['user']['Username']) ?>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="/webdulich/booking/userHistory">Lịch sử đặt tour</a></li>
-        <li><a class="dropdown-item" href="/webdulich/profile">Thông tin cá nhân</a></li>
-        <li><a class="dropdown-item" href="/webdulich/logout">Đăng xuất</a></li>
-      </ul>
-    </div>
-  <?php else: ?>
-    <i class='bx bxs-user' style="color:black"></i>
-    <p><a href="/webdulich/user/login" style="color:black">Đăng nhập</a></p>
-  <?php endif; ?>
-</div>
+      <?php if (isset($_SESSION['user'])): ?>
+         <div class="dropdown">
+            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+               <i class='bx bxs-user'></i>
+               <?= htmlspecialchars($_SESSION['user']['Username']) ?>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a class="dropdown-item" href="/webdulich/booking/userHistory">Lịch sử đặt tour</a></li>
+               <li><a class="dropdown-item" href="/webdulich/profile">Thông tin cá nhân</a></li>
+               <li><a class="dropdown-item" href="/webdulich/logout">Đăng xuất</a></li>
+            </ul>
+         </div>
+      <?php else: ?>
+         <i class='bx bxs-user' style="color:black"></i>
+         <p><a href="/webdulich/user/login" style="color:black">Đăng nhập</a></p>
+      <?php endif; ?>
+   </div>
 
-
-   <!--phần logo-->
+   <!-- logo -->
    <div class="logo">
       <h1>DU LỊCH VIỆT NAM </h1>
-
    </div>
-   <!--phần menu-->
+
+   <!-- menu -->
    <div class="container">
       <div id="divLeft">
          <ul>
-            <li><a href="/webdulich/">Trang chủ</a> </li>
-            <li><a href="/webdulich/tour"> Điểm đến </a></li>
+            <li><a href="/webdulich/">Trang chủ</a></li>
+            <li><a href="/webdulich/tour">Điểm đến</a></li>
          </ul>
       </div>
       <div id="divRight">
-         <form action="/webdulich/search" method="GET">
+         <form id="search-form">
             <input type="text" name="keyword" id="txtSearch" placeholder="Search">
             <button type="submit" id="btnsearch">
                <i class='bx bx-search'></i>
             </button>
          </form>
+
+
       </div>
-
-
    </div>
 
-   <!--phần hình ảnh banner-->
+   <!-- banner -->
    <div class="banner" id="home">
       <img src="/webdulich/public/images/images/dalat.1.jpg" alt="sp">
-
-
-
-      <!--linh thêm -->
-
-   </div>
-   <?php if (!empty($_GET['keyword'])): ?>
-      <h2 class="title">🔍 Kết quả tìm kiếm cho: <?= htmlspecialchars($_GET['keyword']) ?></h2>
-   <?php else: ?>
-      <h2 class="title">🌏 Tour nổi bật</h2>
-   <?php endif; ?>
-   <div class="tour-grid">
-      <?php foreach ($tours as $tour): ?>
-   <?php
-   $images = explode(",", $tour['AnhTour']);
-   $firstImage = trim($images[0]);
-   ?>
-   <div class="tour-card">
-      <img src="/webdulich/public/images/images/<?= $firstImage ?>" alt="<?= $tour['TenTour'] ?>">
-      <div class="tour-info">
-         <h3><?= htmlspecialchars($tour['TenTour']) ?></h3>
-         <p>📍 <?= htmlspecialchars($tour['DiemKhoiHanh']) ?></p>
-         <p>⏰ <?= htmlspecialchars($tour['TGTour']) ?></p>
-         <p>🛫
-            <?= !empty($tour['NgayKhoiHanh'])
-               ? date('d/m/Y', strtotime($tour['NgayKhoiHanh']))
-               : 'Chưa có ngày khởi hành' ?>
-         </p>
-         <div class="price"><?= number_format($tour['GiaTour']) ?>đ</div>
-      </div>
-      <a class="btn" href="/webdulich/detail?id=<?= $tour['MaTour'] ?>">Chi tiết</a>
-      <a class="btn btn-book" href="/webdulich/booking/form?tour_id=<?= $tour['MaTour'] ?>">Đặt tour</a>
-   </div>
-<?php endforeach; ?>
-
    </div>
 
+   <!-- tiêu đề và danh sách tour -->
+   <h2 class="title" id="search-title">🌏 Tour nổi bật</h2>
+   <div class="tour-grid" id="tour-grid"></div>
 
-   <!-- vùng chứa thông tin -->
+
+   <!-- footer info -->
    <div class="footer-info">
       <div class="container info-row">
          <div class="info">
@@ -119,12 +87,58 @@
          </div>
       </div>
    </div>
-   <!--phần footer-->
-   <div class="footer">
 
-   </div>
+   <!-- footer -->
+   <div class="footer"></div>
 
+   <!-- script gọi API -->
+   <script>
+      function renderTours(tours) {
+         const grid = document.getElementById('tour-grid');
+         grid.innerHTML = tours.length ?
+            tours.map(t => {
+               const img = t.AnhTour.split(",")[0].trim();
+               return `
+             <div class="tour-card">
+               <img src="/webdulich/public/images/images/${img}" alt="${t.TenTour}">
+               <div class="tour-info">
+                 <h3>${t.TenTour}</h3>
+                 <p>📍 ${t.DiemKhoiHanh}</p>
+                 <p>⏰ ${t.TGTour}</p>
+                 <p>🛫 ${t.NgayKhoiHanh ? new Date(t.NgayKhoiHanh).toLocaleDateString('vi-VN') : 'Chưa có ngày khởi hành'}</p>
+                 <div class="price">${Number(t.GiaTour).toLocaleString()}đ</div>
+               </div>
+               <a class="btn" href="/webdulich/detail?id=${t.MaTour}">Chi tiết</a>
+               <a class="btn btn-book" href="/webdulich/booking/form?tour_id=${t.MaTour}">Đặt tour</a>
+             </div>`;
+            }).join('') :
+            "<p>❌ Không có tour nào</p>";
+      }
 
+      function loadTours(keyword = '') {
+         const url = keyword ?
+            '/webdulich/api/home/search?keyword=' + encodeURIComponent(keyword) :
+            '/webdulich/api/home';
+
+         fetch(url)
+            .then(r => r.json())
+            .then(d => {
+               document.getElementById('search-title').textContent =
+                  keyword ? "🔍 Kết quả tìm kiếm cho: " + keyword : "🌏 Tour nổi bật";
+               renderTours(d.data);
+            })
+            .catch(err => console.error("Lỗi khi gọi API:", err));
+      }
+
+      // mặc định hiển thị 8 tour nổi bật
+      loadTours();
+
+      // xử lý form search
+      document.getElementById('search-form').addEventListener('submit', e => {
+         e.preventDefault();
+         loadTours(document.getElementById('txtSearch').value);
+      });
+   </script>
 </body>
 
 </html>
