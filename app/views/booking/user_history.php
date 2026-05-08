@@ -50,8 +50,8 @@
                         <tr>
                             <td>${b.MaDat}</td>
                             <td>${b.TenTour}</td>
-                            <td>${b.NgayDat}</td>
-                            <td>${b.NgayDi}</td>
+                            <td>${b.NgayDat.split(' ')[0]}</td>
+                            <td>${b.NgayDi.split(' ')[0]}</td>
                             <td>${b.SoLuongKhach}</td>
                             <td>${Number(b.GiaTour).toLocaleString()} VND</td>
                             <td>${b.CapKS}</td>
