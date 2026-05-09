@@ -57,6 +57,38 @@ class UserApiController {
         }
     }
 
+    public function updateProfile() {
+        // Lấy dữ liệu từ POST
+        $maTVien = $_POST['MaTVien'] ?? null;
+        if (!$maTVien) {
+            return $this->jsonResponse(400, [
+                'status' => 'error',
+                'message' => 'Thiếu mã thành viên'
+            ]);
+        }
+
+        $data = [
+            'MaTVien'    => $maTVien,
+            'HoTen'      => $_POST['HoTen'] ?? '',
+            'EmailTVien' => $_POST['EmailTVien'] ?? '',
+            'DiaChi'     => $_POST['DiaChi'] ?? '',
+            'SoCMT'      => $_POST['SoCMT'] ?? '',
+            'SoDT'       => $_POST['SoDT'] ?? ''
+        ];
+
+        $ok = $this->service->updateProfile($data);
+        if ($ok) {
+            return $this->jsonResponse(200, [
+                'status' => 'success',
+                'message' => 'Cập nhật thành công'
+                ]);
+            } else {
+            return $this->jsonResponse(500, [
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ]);
+        }
+    }
     private function jsonResponse($statusCode, $data) {
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');

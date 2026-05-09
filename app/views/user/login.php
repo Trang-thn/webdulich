@@ -27,13 +27,13 @@
     <script>
 document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const formData = new FormData(this);
 
+  const formData = new FormData(this);
   const msg = document.getElementById('login-msg');
   const btn = this.querySelector('button');
+
   btn.disabled = true;
   btn.textContent = "Đang đăng nhập...";
-
   msg.textContent = "Đang xử lý...";
   msg.style.color = "blue";
 
@@ -43,15 +43,19 @@ document.getElementById('login-form').addEventListener('submit', async function(
       body: formData
     });
 
-    if (!res.ok) throw new Error("HTTP " + res.status);
-
+    // Luôn đọc body JSON, kể cả khi status != 200
     const data = await res.json();
+
+    if (!res.ok) {
+      msg.textContent = data.message || "Sai tài khoản hoặc mật khẩu!";
+      msg.style.color = "red";
+      return;
+    }
 
     if (data.status === 'success') {
       msg.textContent = data.message || "Đăng nhập thành công!";
       msg.style.color = "green";
 
-      // Điều hướng theo API trả về
       if (data.redirect) {
         window.location.href = data.redirect;
       } else if (data.role === 'admin') {
@@ -71,6 +75,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
     btn.textContent = "Đăng nhập";
   }
 });
+
 </script>
 
   </div>

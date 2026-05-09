@@ -59,6 +59,10 @@ class UserService {
         }
         return $this->userModel->register($data);
     }
+public function updateProfile($data) {
+    return $this->userModel->updateProfile($data['MaTVien'], $data);
+}
+
 
     public function dashboardStats() {
         return [

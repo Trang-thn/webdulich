@@ -78,14 +78,18 @@ class AdminApiController {
     }
 
     // ✅ API thông tin người dùng
-    public function profile()
+public function profile()
 {
-    $userId = $_GET['id'] ?? null;
-    if ($userId) {
-        $user = $this->userService->getUserById($userId); // sửa ở đây
-        echo json_encode(['status' => 'success', 'data' => $user], JSON_UNESCAPED_UNICODE);
+    $userId = $_SESSION['user']['MaTVien'] ?? null;
+    if (!$userId) {
+        return $this->jsonResponse(401, ['status'=>'error','message'=>'Chưa đăng nhập']);
+    }
+
+    $user = $this->userService->getUserById($userId);
+    if ($user) {
+        return $this->jsonResponse(200, ['status'=>'success','data'=>$user]);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Thiếu ID người dùng'], JSON_UNESCAPED_UNICODE);
+        return $this->jsonResponse(404, ['status'=>'error','message'=>'Không tìm thấy người dùng']);
     }
 }
 

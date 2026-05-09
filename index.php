@@ -74,6 +74,7 @@ $router->post('/api/users/add', 'UserApiController@add');
 $router->post('/api/users/update', 'UserApiController@update');
 $router->post('/api/users/delete', 'UserApiController@delete');
 $router->get('/api/users/check', 'UserApiController@checkUsername');
+$router->post('/api/users/updateProfile', 'UserApiController@updateProfile');
 // Tour
 $router->get('/tour/add', 'TourController@add');
 $router->get('/tour/edit', 'TourController@edit');
