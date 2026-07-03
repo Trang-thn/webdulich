@@ -20,7 +20,6 @@ class UserService {
     }
 
     public function createUser($data) {
-        // Ví dụ: validate dữ liệu trước khi thêm
         if ($this->userModel->existsUsername($data['Username'])) {
             throw new Exception("Tên đăng nhập đã tồn tại");
         }
@@ -36,20 +35,17 @@ class UserService {
     }
 
     public function login($username, $password) {
-    // Kiểm tra admin (plain text)
-    $admin = $this->adminModel->getByUsername($username);
-    if ($admin && $admin['PassAdmin'] === $password) {
-        return ['role' => 'admin', 'data' => $admin];
-    }
+        $admin = $this->adminModel->getByUsername($username);
+        if ($admin && $admin['PassAdmin'] === $password) {
+            return ['role' => 'admin', 'data' => $admin];
+        }
+        $user = $this->userModel->getByUsername($username);
+        if ($user && password_verify($password, $user['PassWord'])) {
+            return ['role' => 'user', 'data' => $user];
+        }
 
-    // Kiểm tra user (có mã hóa)
-    $user = $this->userModel->getByUsername($username);
-    if ($user && password_verify($password, $user['PassWord'])) {
-        return ['role' => 'user', 'data' => $user];
+        return null;
     }
-
-    return null;
-}
 
 
 
@@ -59,9 +55,9 @@ class UserService {
         }
         return $this->userModel->register($data);
     }
-public function updateProfile($data) {
-    return $this->userModel->updateProfile($data['MaTVien'], $data);
-}
+    public function updateProfile($data) {
+        return $this->userModel->updateProfile($data['MaTVien'], $data);
+    }
 
 
     public function dashboardStats() {

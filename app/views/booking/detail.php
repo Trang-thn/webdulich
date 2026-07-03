@@ -34,7 +34,7 @@
             <li class="list-group-item"><strong>Khách hàng:</strong> ${b.HoTen}</li>
             <li class="list-group-item"><strong>Email:</strong> ${b.EmailTVien}</li>
             <li class="list-group-item"><strong>Tour:</strong> ${b.TenTour}</li>
-            <li class="list-group-item"><strong>Giá tour:</strong> 
+            <li class="list-group-item"><strong>Giá tour:</strong>
                 <span class="price">${Number(b.GiaTour).toLocaleString('vi-VN')} đ</span>
             </li>
             <li class="list-group-item"><strong>Ngày đặt:</strong> ${b.NgayDat}</li>
@@ -67,8 +67,6 @@
 
         if (maDat) loadBooking(maDat);
     </script>
-
-
 </body>
 
 </html>

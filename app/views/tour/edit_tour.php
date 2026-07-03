@@ -4,61 +4,8 @@
   <meta charset="UTF-8">
   <title>Sửa Tour</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Segoe UI', sans-serif; }
-    .edit-tour {
-      max-width: 700px;
-      margin: 60px auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
-    }
-    .edit-tour h2 {
-      text-align: center;
-      margin-bottom: 35px;
-      letter-spacing: 1px;
-      color: #1c1c1c;
-    }
-    .edit-tour h2 span { color: #bfa25a; }
-    .form-label { font-weight: 600; color: #333; }
-    .form-control {
-      border-radius: 12px;
-      padding: 12px;
-      border: 1px solid #ddd;
-      background: #fafafa;
-      transition: 0.3s;
-    }
-    .form-control:focus {
-      border-color: #bfa25a;
-      box-shadow: 0 0 8px rgba(191, 162, 90, 0.4);
-      background: #fff;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #bfa25a, #8e6f3e);
-      border: none;
-      padding: 10px 26px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-    .btn-secondary {
-      padding: 10px 26px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-    }
-    @media (max-width: 576px) {
-      .edit-tour { padding: 25px; }
-    }
-    #msg { text-align:center; margin-top:15px; font-weight:600; }
-    img { margin-top: 10px; border-radius: 4px; max-width: 100%; }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" >
+  <link rel="stylesheet" href="/webdulich/public/css/edit_tour.css">
 </head>
 <body>
 
@@ -118,11 +65,9 @@
 </div>
 
 <script>
-// Lấy id từ URL
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 
-// Nạp dữ liệu tour vào form
 fetch('/webdulich/api/tours/detail?id=' + id)
   .then(res => res.json())
   .then(data => {
@@ -138,7 +83,6 @@ fetch('/webdulich/api/tours/detail?id=' + id)
         : '';
       document.getElementById('NoiDungTour').value = tour.NoiDungTour || '';
 
-      // Hiển thị ảnh hiện tại
       const imgs = tour.AnhTour ? tour.AnhTour.split(',') : [];
       const imgContainer = document.getElementById('currentImage');
       imgContainer.innerHTML = imgs.map(img =>
@@ -154,7 +98,6 @@ fetch('/webdulich/api/tours/detail?id=' + id)
     document.getElementById('msg').style.color = 'red';
   });
 
-// Xử lý submit form cập nhật
 document.getElementById('editTourForm').addEventListener('submit', e => {
   e.preventDefault();
   const formData = new FormData(e.target);

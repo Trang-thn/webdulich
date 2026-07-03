@@ -17,7 +17,7 @@ class AdminApiController {
 
         if ($result) {
             if ($result['role'] === 'admin') {
-                $_SESSION['admin'] = $result['data']; // lưu riêng cho admin
+                $_SESSION['admin'] = $result['data'];
                 return $this->jsonResponse(200, [
                     'status' => 'success',
                     'message' => 'Đăng nhập thành công',
@@ -25,7 +25,7 @@ class AdminApiController {
                     'redirect' => '/webdulich/dashboard'
                 ]);
             } else {
-                $_SESSION['user'] = $result['data']; // lưu riêng cho user
+                $_SESSION['user'] = $result['data'];
                 return $this->jsonResponse(200, [
                     'status' => 'success',
                     'message' => 'Đăng nhập thành công',
@@ -77,7 +77,6 @@ class AdminApiController {
         ]);
     }
 
-    // ✅ API thông tin người dùng
 public function profile()
 {
     $userId = $_SESSION['user']['MaTVien'] ?? null;

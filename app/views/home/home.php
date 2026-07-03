@@ -130,10 +130,8 @@
             .catch(err => console.error("Lỗi khi gọi API:", err));
       }
 
-      // mặc định hiển thị 8 tour nổi bật
       loadTours();
 
-      // xử lý form search
       document.getElementById('search-form').addEventListener('submit', e => {
          e.preventDefault();
          loadTours(document.getElementById('txtSearch').value);

@@ -5,33 +5,8 @@
     <meta charset="UTF-8">
     <title>Trang cá nhân</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; }
-        .profile-card {
-            max-width: 700px;
-            margin: 60px auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.35);
-        }
-        .profile-card h2 { text-align: center; margin-bottom: 35px; color: #1c1c1c; }
-        .auth-background {
-            min-height: 100vh;
-            background: url('/webdulich/public/images/images/dalat_3.jpg') no-repeat center center;
-            background-size: cover;
-        }
-        .profile-item { margin-bottom: 15px; font-size: 16px; }
-        .profile-item strong { min-width: 120px; display: inline-block; }
-        .btn-primary {
-            background: linear-gradient(135deg, #bfa25a, #8e6f3e);
-            border: none; padding: 10px 26px; border-radius: 12px; font-weight: 600;
-        }
-        .btn-secondary { padding: 10px 26px; border-radius: 12px; font-weight: 600; }
-        #profile-msg { text-align:center; margin-top:10px; font-weight:500; }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="/webdulich/public/css/profile.css">
 </head>
 <body class="auth-background">
 
@@ -53,7 +28,6 @@
     </div>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -79,11 +53,11 @@
             </div>
             <div class="mb-3">
                 <label>Số CMT</label>
-                <input type="text" name="SoCMT" class="form-control" id="form-SoCMT">
+                <input type="number" name="SoCMT" class="form-control" id="form-SoCMT">
             </div>
             <div class="mb-3">
                 <label>Số ĐT</label>
-                <input type="text" name="SoDT" class="form-control" id="form-SoDT">
+                <input type="number" name="SoDT" class="form-control" id="form-SoDT">
             </div>
             <div id="profile-msg"></div>
         </div>
@@ -98,71 +72,60 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// API get profile
-async function loadProfile() {
-    try {
-        const res = await fetch('/webdulich/api/users/detail?id=<?= json_encode($_SESSION['user']['MaTVien'] ?? 0) ?>');
-        const data = await res.json();
-        if (data.status === 'success') {
-            const u = data.data;
-            document.getElementById('profile-id').textContent = "#" + u.MaTVien;
-            document.getElementById('view-HoTen').textContent = u.HoTen;
-            document.getElementById('view-EmailTVien').textContent = u.EmailTVien;
-            document.getElementById('view-DiaChi').textContent = u.DiaChi;
-            document.getElementById('view-SoCMT').textContent = u.SoCMT;
-            document.getElementById('view-SoDT').textContent = u.SoDT;
+    async function loadProfile() {
+        try {
+            const res = await fetch('/webdulich/api/users/detail?id=<?= json_encode($_SESSION['user']['MaTVien'] ?? 0) ?>');
+            const data = await res.json();
+            if (data.status === 'success') {
+                const u = data.data;
+                document.getElementById('profile-id').textContent = "#" + u.MaTVien;
+                document.getElementById('view-HoTen').textContent = u.HoTen;
+                document.getElementById('view-EmailTVien').textContent = u.EmailTVien;
+                document.getElementById('view-DiaChi').textContent = u.DiaChi;
+                document.getElementById('view-SoCMT').textContent = u.SoCMT;
+                document.getElementById('view-SoDT').textContent = u.SoDT;
 
-            // điền vào form
-            document.getElementById('form-MaTVien').value = u.MaTVien;
-            document.getElementById('form-HoTen').value = u.HoTen;
-            document.getElementById('form-EmailTVien').value = u.EmailTVien;
-            document.getElementById('form-DiaChi').value = u.DiaChi;
-            document.getElementById('form-SoCMT').value = u.SoCMT;
-            document.getElementById('form-SoDT').value = u.SoDT;
+                document.getElementById('form-MaTVien').value = u.MaTVien;
+                document.getElementById('form-HoTen').value = u.HoTen;
+                document.getElementById('form-EmailTVien').value = u.EmailTVien;
+                document.getElementById('form-DiaChi').value = u.DiaChi;
+                document.getElementById('form-SoCMT').value = u.SoCMT;
+                document.getElementById('form-SoDT').value = u.SoDT;
+            }
+        } catch (err) {
+            console.error("Lỗi load profile:", err);
         }
-    } catch (err) {
-        console.error("Lỗi load profile:", err);
     }
-}
 
-// API update profile
-document.getElementById('profile-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const msg = document.getElementById('profile-msg');
+    document.getElementById('profile-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const msg = document.getElementById('profile-msg');
+        msg.textContent = "Đang xử lý...";
+        msg.style.color = "blue";
 
-    msg.textContent = "Đang xử lý...";
-    msg.style.color = "blue";
-
-    try {
-        const res = await fetch('/webdulich/api/users/updateProfile', { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.status === 'success') {
-            msg.textContent = data.message || 'Cập nhật thành công!';
-            msg.style.color = 'green';
-
-            // refresh view bằng API get
-            loadProfile();
-
-            // đóng modal sau 1s
-            setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-                modal.hide();
-                msg.textContent = "";
-            }, 1000);
-        } else {
-            msg.textContent = data.message || 'Cập nhật thất bại!';
+        try {
+            const res = await fetch('/webdulich/api/users/updateProfile', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.status === 'success') {
+                msg.textContent = data.message || 'Cập nhật thành công!';
+                msg.style.color = 'green';
+                loadProfile();
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                    modal.hide();
+                    msg.textContent = "";
+                }, 1000);
+            } else {
+                msg.textContent = data.message || 'Cập nhật thất bại!';
+                msg.style.color = 'red';
+            }
+        } catch (err) {
+            msg.textContent = 'Lỗi kết nối API: ' + err.message;
             msg.style.color = 'red';
         }
-    } catch (err) {
-        msg.textContent = 'Lỗi kết nối API: ' + err.message;
-        msg.style.color = 'red';
-    }
-});
-
-// load dữ liệu khi mở trang
-loadProfile();
+    });
+    loadProfile();
 </script>
 
 </body>

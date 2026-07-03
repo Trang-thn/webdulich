@@ -9,30 +9,17 @@ class Tour
         $result = $conn->query("SELECT * FROM tour");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-//     public static function search($keyword)
-//     {
-//         $conn = Database::getConnection();
-//         $stmt = $conn->prepare("SELECT * FROM tour WHERE TenTour LIKE ?");
-//         $kw = "%$keyword%";
-//         $stmt->bind_param("s", $kw);
-//         $stmt->execute();
-//         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-//     }
-//     public static function getById($id)
-//     {
-// =======
-   public static function search($keyword) {
-    $conn = Database::getConnection();
-    // ép về lower-case và dùng collation để bỏ dấu
-    $stmt = $conn->prepare("SELECT * FROM tour WHERE LOWER(TenTour) COLLATE utf8_general_ci LIKE LOWER(?) COLLATE utf8_general_ci");
-    $kw = "%$keyword%";
-    $stmt->bind_param("s", $kw);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
-
-
-    public static function getById($id) {
+    public static function search($keyword)
+    {
+        $conn = Database::getConnection();
+        $stmt = $conn->prepare("SELECT * FROM tour WHERE TenTour LIKE ?");
+        $kw = "%$keyword%";
+        $stmt->bind_param("s", $kw);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    public static function getById($id)
+    {
         $conn = Database::getConnection();
         $stmt = $conn->prepare("SELECT * FROM tour WHERE MaTour = ?");
         $stmt->bind_param("i", $id);

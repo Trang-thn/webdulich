@@ -3,23 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý thành viên</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; }
-        .manage-container {
-            max-width: 1200px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        h2 { text-align:center; margin-bottom:25px; color:#111; font-weight:bold; }
-        thead { background: linear-gradient(135deg, #6c757d, #495057); color:#fff; }
-        tbody tr:hover { background-color:#f9f9f9; }
-        .action-btn { margin-right:5px; }
-        .search-bar { margin-bottom:20px; display:flex; gap:10px; }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webdulich/public/css/manage_user.css">
 </head>
 <body>
 <div class="manage-container">
@@ -57,7 +42,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
-    // Load danh sách user từ API
     function loadUsers(keyword = '') {
         fetch('/webdulich/api/users/list?keyword=' + encodeURIComponent(keyword))
             .then(res => res.json())
@@ -88,7 +72,6 @@
             });
     }
 
-    // Xóa user qua API
     function deleteUser(id) {
         if (!confirm('Bạn có chắc muốn xóa thành viên này?')) return;
         const formData = new FormData();
@@ -106,14 +89,12 @@
             });
     }
 
-    // Tìm kiếm
     document.getElementById('search-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const keyword = this.querySelector('[name="keyword"]').value;
         loadUsers(keyword);
     });
 
-    // Load dữ liệu khi mở trang
     loadUsers();
 </script>
 </body>

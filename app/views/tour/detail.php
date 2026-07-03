@@ -68,23 +68,21 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 
-// Load tour
 if (id) {
   fetch('/webdulich/api/tours/detail?id=' + id)
     .then(res => res.json())
     .then(data => {
       if (data.status === 'success') {
-        // Nếu API trả về data.data (không có tour bên trong)
-        const tour = data.data; 
+        const tour = data.data;
 
         document.getElementById('tour-title').textContent = tour.TenTour;
         document.getElementById('tg-tour').textContent = tour.TGTour;
         document.getElementById('diem-khoi-hanh').textContent = tour.DiemKhoiHanh;
-        document.getElementById('ngay-khoi-hanh').textContent = tour.NgayKhoiHanh 
-            ? new Date(tour.NgayKhoiHanh).toLocaleDateString('vi-VN') 
+        document.getElementById('ngay-khoi-hanh').textContent = tour.NgayKhoiHanh
+            ? new Date(tour.NgayKhoiHanh).toLocaleDateString('vi-VN')
             : 'Chưa có ngày khởi hành';
         document.getElementById('noi-dung-tour').innerHTML = tour.NoiDungTour.replace(/\n/g, '<br>');
-        document.getElementById('gia-tour').textContent = 
+        document.getElementById('gia-tour').textContent =
             new Intl.NumberFormat('vi-VN').format(tour.GiaTour) + 'đ';
         document.getElementById('btn-book').href = '/webdulich/booking/form?tour_id=' + tour.MaTour;
         document.getElementById('maTour-hidden').value = tour.MaTour;
@@ -99,8 +97,6 @@ if (id) {
       }
     });
 
-  
-  // Load comments
 fetch('/webdulich/api/comments/byTour?id=' + id)
   .then(res => res.json())
   .then(data => {
@@ -123,7 +119,6 @@ fetch('/webdulich/api/comments/byTour?id=' + id)
   });
 }
 
-// Submit comment
 document.getElementById('comment-form').addEventListener('submit', function(e) {
   e.preventDefault();
   const formData = new FormData(this);

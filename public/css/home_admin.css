@@ -1,0 +1,8 @@
+body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; }
+        .manage-container { max-width: 1000px; margin: 50px auto; background: #fff;
+            padding: 30px; border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        h2 { text-align: center; margin-bottom: 25px; color: #111; font-weight: bold; }
+        .stats-table th { background: linear-gradient(135deg, #6c757d, #495057); color: #fff; }
+        .stats-table td { font-weight: 500; color: #333; }
+        .welcome { text-align: center; margin-bottom: 30px; }
+        .welcome span { color: #bfa25a; font-weight: bold; }

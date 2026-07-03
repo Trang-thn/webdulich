@@ -4,60 +4,8 @@
     <meta charset="UTF-8">
     <title>Sửa thành viên</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; }
-        .edit-user {
-            max-width: 700px;
-            margin: 60px auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
-        }
-        .edit-user h2 {
-            text-align: center;
-            margin-bottom: 35px;
-            letter-spacing: 1px;
-            color: #1c1c1c;
-        }
-        .edit-user h2 span { color: #bfa25a; }
-        .form-label { font-weight: 600; color: #333; }
-        .form-control {
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid #ddd;
-            background: #fafafa;
-            transition: 0.3s;
-        }
-        .form-control:focus {
-            border-color: #bfa25a;
-            box-shadow: 0 0 8px rgba(191, 162, 90, 0.4);
-            background: #fff;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #bfa25a, #8e6f3e);
-            border: none;
-            padding: 10px 26px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        .btn-secondary {
-            padding: 10px 26px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            transition: 0.3s;
-        }
-        @media (max-width: 576px) {
-            .edit-user { padding: 25px; }
-        }
-        #msg { text-align:center; margin-top:15px; font-weight:600; }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webdulich/public/css/edit_user.css">
 </head>
 <body>
 
@@ -107,11 +55,9 @@
 </div>
 
 <script>
-    // Lấy ID từ query string
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
-    // Load dữ liệu user từ API
     function loadUser(id) {
         fetch('/webdulich/api/users/detail?id=' + id)
             .then(res => res.json())
@@ -137,7 +83,6 @@
             });
     }
 
-    // Submit cập nhật qua API
     document.getElementById('edit-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -162,7 +107,6 @@
             });
     });
 
-    // Load dữ liệu khi mở trang
     if (id) loadUser(id);
 </script>
 

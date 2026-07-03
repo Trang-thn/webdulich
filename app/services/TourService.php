@@ -21,12 +21,18 @@ class TourService {
             }
         }
     }
-    $AnhTourString = implode(",", $AnhTourList);
+    if (!empty($data['NgayKhoiHanh'])) {
+    $ngayNhap = strtotime($data['NgayKhoiHanh']);
+    $homNay = strtotime(date("m-d-Y"));
 
-    $NgayKhoiHanh = !empty($data['NgayKhoiHanh'])
-        ? date("Y-m-d H:i:s", strtotime($data['NgayKhoiHanh']))
-        : date("Y-m-d H:i:s");
-
+    if ($ngayNhap < $homNay) {
+        throw new Exception("Ngày khởi hành không hợp lệ.");
+    } else {
+        $NgayKhoiHanh = date("m-d-Y H:i:s", $ngayNhap);
+    }
+} else {
+    $NgayKhoiHanh = date("m-d-Y H:i:s");
+} 
     $MaLoai = isset($data['MaLoai']) ? intval($data['MaLoai']) : 1;
 
     $sql = "INSERT INTO tour ( TenTour, GiaTour, TGTour, DiemKhoiHanh, NgayKhoiHanh, NoiDungTour, AnhTour)

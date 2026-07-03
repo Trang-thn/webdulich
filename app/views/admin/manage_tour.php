@@ -4,22 +4,7 @@
   <meta charset="UTF-8">
   <title>Quản lý Tour</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Segoe UI', sans-serif; }
-    .manage-container {
-      max-width: 1200px;
-      margin: 50px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-    h2 { text-align:center; margin-bottom:25px; color:#111; font-weight:bold; }
-    thead { background: linear-gradient(135deg, #6c757d, #495057); color:#fff; }
-    tbody tr:hover { background-color:#f9f9f9; }
-    .search-bar { margin-bottom:20px; display:flex; gap:10px; }
-    .action-btn { margin-right:5px; }
-  </style>
+  <link rel="stylesheet" href="/webdulich/public/css/manage_tour.css">
 </head>
 <body>
 <div class="manage-container">
@@ -54,15 +39,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
-  // Load danh sách tour từ API
 function loadTours(keyword = '') {
   const url = keyword
     ? '/webdulich/api/tours/search?keyword=' + encodeURIComponent(keyword)
     : '/webdulich/api/tours';
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
+  fetch(url).then(res => res.json()).then(data => {
       const tbody = document.querySelector('#tour-table tbody');
       tbody.innerHTML = '';
       if (data.status === 'success' && data.data.length > 0) {
@@ -90,8 +72,6 @@ function loadTours(keyword = '') {
     });
 }
 
-
-  // Xóa tour qua API
   function deleteTour(id) {
     if (!confirm('Bạn có chắc muốn xóa tour này?')) return;
     const formData = new FormData();
@@ -109,14 +89,12 @@ function loadTours(keyword = '') {
       });
   }
 
-  // Tìm kiếm ngay trong view
   document.getElementById('search-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const keyword = this.querySelector('[name="keyword"]').value;
     loadTours(keyword); // gọi API và render kết quả ngay trong bảng
   });
 
-  // Load dữ liệu khi mở trang
   loadTours();
 </script>
 </body>

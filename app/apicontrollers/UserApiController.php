@@ -58,7 +58,6 @@ class UserApiController {
     }
 
     public function updateProfile() {
-        // Lấy dữ liệu từ POST
         $maTVien = $_POST['MaTVien'] ?? null;
         if (!$maTVien) {
             return $this->jsonResponse(400, [

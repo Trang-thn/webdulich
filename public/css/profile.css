@@ -1,0 +1,23 @@
+body { font-family: 'Segoe UI', sans-serif; }
+        .profile-card {
+            max-width: 700px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+        }
+        .profile-card h2 { text-align: center; margin-bottom: 35px; color: #1c1c1c; }
+        .auth-background {
+            min-height: 100vh;
+            background: url('/webdulich/public/images/images/dalat_3.jpg') no-repeat center center;
+            background-size: cover;
+        }
+        .profile-item { margin-bottom: 15px; font-size: 16px; }
+        .profile-item strong { min-width: 120px; display: inline-block; }
+        .btn-primary {
+            background: linear-gradient(135deg, #bfa25a, #8e6f3e);
+            border: none; padding: 10px 26px; border-radius: 12px; font-weight: 600;
+        }
+        .btn-secondary { padding: 10px 26px; border-radius: 12px; font-weight: 600; }
+        #profile-msg { text-align:center; margin-top:10px; font-weight:500; }
